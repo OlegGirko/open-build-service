@@ -265,9 +265,11 @@ case "$1" in
 
         # fetch worker sources from server
         echo "Fetching initial worker code from $WORKER_CODE"
+	read DUMMYHTTP WORKER DUMMYPORT <<< ${WORKER_CODE//:/ }
+	[[ $WORKER ]] && NO_WORKER_PROXY="--noproxy ${WORKER#//}"
         mkdir -p "$workerbootdir"
         pushd "$workerbootdir" > /dev/null
-        curl -s "$WORKER_CODE"/getworkercode | cpio --quiet --extract 
+        curl  ${NO_WORKER_PROXY:-""} -s "$WORKER_CODE"/getworkercode | cpio --quiet --extract 
         ln -s . XML 
         chmod 755 bs_worker
         popd > /dev/null
