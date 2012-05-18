@@ -3179,6 +3179,12 @@ sub delproject {
           }
         }
         unlink("$projectsdir/$projid.pkg/$f");
+	# Stash per-project trees pending undelete (removing any old ones)
+	if ($BSConfig::nosharedtrees) {
+	  my $deletedtrees = "$projectsdir/_deleted/${projid}_trees";
+	  system("rm -rf $deletedtrees") if -e $deletedtrees;
+	  rename("$treesdir/$projid", $deletedtrees);
+	}
       }
       rmdir("$projectsdir/$projid.pkg") || die("rmdir $projectsdir/$projid.pkg: $!\n");
     }
@@ -3221,6 +3227,9 @@ sub undeleteproject {
       }
     }
   }
+  # Restore any trees
+  rename("$projectsdir/_deleted/${projid}_trees", "$treesdir/$projid")
+    if -e "$projectsdir/_deleted/${projid}_trees" && $BSConfig::nosharedtrees;
   notify_repservers('project', $projid);
   BSNotify::notify("SRCSRV_UNDELETE_PROJECT", { "project" => $projid, "comment" => $cgi->{'comment'}, "sender" => ($cgi->{'user'} || "unknown") });
 
