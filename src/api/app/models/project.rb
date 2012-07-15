@@ -1572,7 +1572,7 @@ class Project < ActiveRecord::Base
     # copy entire project in the backend
     begin
       path = "/source/#{URI.escape(self.name)}"
-      path << Suse::Backend.build_query_from_hash(params, [:cmd, :user, :comment, :oproject, :withbinaries, :withhistory, :makeolder])
+      path << Suse::Backend.build_query_from_hash(params, [:cmd, :user, :comment, :oproject, :withbinaries, :withhistory, :makeolder, :withprjconf])
       Suse::Backend.post path, nil
     rescue Suse::Backend::HTTPError => e
       logger.debug "copy failed: #{e.message}"
