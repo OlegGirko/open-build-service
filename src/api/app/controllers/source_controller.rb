@@ -1,6 +1,7 @@
 include ProductHelper
 include MaintenanceHelper
 include ValidationHelper
+include FlagHelper
 
 class SourceController < ApplicationController
 
@@ -1484,9 +1485,21 @@ class SourceController < ApplicationController
       else # local project
         p = Project.new :name => project_name, :title => oprj.title, :description => oprj.description
         p.save
+        build_disabled = false
+        publish_disabled = false
+
         oprj.flags.each do |f|
           p.flags.create(:status => f.status, :flag => f.flag, :architecture => f.architecture, :repo => f.repo) unless f.flag == 'lock'
+          if f.flag == "build" and f.status == "disable"
+            build_disabled = true
+          end
+          if f.flag == "publish" and f.status == "disable"
+            publish_disabled = true
+          end
         end
+
+        p.flags.create(:status => 'disable', :flag => 'build') if not build_disabled
+        p.flags.create(:status => 'disable', :flag => 'publish') if not publish_disabled
 
         oprj.linkedprojects.each do |l|
           p.linkedprojects.create( :linked_remote_project_name => l.linked_remote_project_name , :position => l.position ) if l.linked_remote_project_name
@@ -1511,6 +1524,9 @@ class SourceController < ApplicationController
 
     if params.has_key? :nodelay
       p.do_project_copy(params)
+      p.flags.delete_if { |f| f.flag == "build" and f.status == "disable" }
+      p.flags.delete_if { |f| f.flag == "publish" and f.status == "disable" }
+      p.store
       render_ok
     else
       # inject as job
