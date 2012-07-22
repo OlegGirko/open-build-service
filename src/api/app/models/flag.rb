@@ -13,10 +13,11 @@ class Flag < ActiveRecord::Base
     options = Hash.new
     options['arch'] = self.architecture.name unless self.architecture.nil?
     options['repository'] = self.repo unless self.repo.nil?
+    options['package'] = self.package unless self.package.nil?
     builder.send(status.to_s, options)
   end
 
-  def is_explicit_for?(in_repo, in_arch)
+  def is_explicit_for?(in_repo, in_arch, in_package=nil)
     return false unless is_relevant_for?(in_repo, in_arch)
 
     arch = architecture ? architecture.name : nil
@@ -26,6 +27,9 @@ class Flag < ActiveRecord::Base
 
     return false if repo.nil? and !in_repo.nil?
     return false if !repo.nil? and in_repo.nil?
+
+    return false if package.nil? and !in_package.nil?
+    return false if !package.nil? and in_package.nil?
 
     return true
   end
@@ -59,6 +63,7 @@ class Flag < ActiveRecord::Base
     ret = status
     ret += " arch=#{self.architecture.name}" unless self.architecture.nil?
     ret += " repo=#{self.repo}" unless self.repo.nil?
+    ret += " repo=#{self.package}" unless self.repo.package?
     ret
   end
 

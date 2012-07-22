@@ -261,6 +261,7 @@ CREATE TABLE `flags` (
   `architecture_id` int(11) DEFAULT NULL,
   `position` int(11) NOT NULL,
   `flag` enum('useforbuild','sourceaccess','binarydownload','debuginfo','build','publish','access','lock') CHARACTER SET utf8 NOT NULL,
+  `package` tinyblob DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_flags_on_db_package_id` (`db_package_id`),
   KEY `index_flags_on_db_project_id` (`db_project_id`),
