@@ -34,8 +34,7 @@ BuildRequires:  python-devel
 # also see requires in the obs-server-api sub package
 BuildRequires:  build >= 2012.05.31
 BuildRequires:  perl-BSSolv
-BuildRequires:  rubygem-rails-2_3 >= 2.3.14
-BuildRequires:  rubygem-rmagick
+BuildRequires:  rubygem-rails
 PreReq:         /usr/sbin/useradd /usr/sbin/groupadd
 Conflicts:      obs-productconverter < %version-%release
 Requires:       build >= 2012.05.31
