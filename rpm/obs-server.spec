@@ -210,7 +210,7 @@ Authors:       Susanne Oberhauser, Martin Mohring
 %prep
 # Adjusting %%setup since git-pkg unpacks to src/
 # %%setup -T -q -c -n opensuse-themes -a 1
-%setup -D -q -n src
+%setup -q
 
 # drop build script, we require the installed one from own package
 rm -rf src/build
