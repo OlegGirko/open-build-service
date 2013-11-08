@@ -1,0 +1,31 @@
+* Thu Apr 2013 David Greaves <david@dgreaves.com> - 2.3.1-mer7
+- Don't use ftools
+
+* Mon Mar 2013 David Greaves <david@dgreaves.com> - 2.3.1-mer6
+ - fix 64bit debian dod
+ - Fix tmpfs umount issues
+
+* Mon Feb 11 2013 David Greaves <david@dgreaves.com> - 2.3.1-mer5
+ - [webui] fix javascript quoting with rails 3.2.8
+ - Enable HTTPS support for the benifit of https dod repos
+ - Fix live build log javascript quoting with rails 3
+
+* Tue Aug 21 2012 David Greaves <david@dgreaves.com> - 2.3.1-mer4
+ - migration fix
+ - Patches fdrom Islam Amer:
+   - Allow package build flags in prjmeta to override arch flags
+   - Try harder to preserve flags. Also preserve package flags in the project meta
+ - Ignore validation in configuration screen
+
+* Thu Aug 09 2012 David Greaves <david@dgreaves.com> - 2.3.1-mer3
+ - Provide OBS_WORKER_DISCRETE_IDS
+ - Allow per package build flag in project meta
+ - git tag 2.3.1-mer3
+
+* Sun Jul 15 2012 David Greaves <david@dgreaves.com> - 2.3.1-2
+ - Uses Mer's new binary copyprj code by Islam Amer
+ - git tag 2.3.1-mer2 0e1fc95e
+
+* Thu Jun 28 2012 David Greaves <david@dgreaves.com> - 2.3.1-1
+ - Initial release of Mer OBS
+ - Based on 2.3.1 with scratchbox2 and copyproject support.
