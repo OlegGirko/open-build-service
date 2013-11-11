@@ -386,6 +386,7 @@ class ApplicationController < ActionController::Base
   def get_request_path
     path = request.path
     query_string = request.query_string
+    path.slice!( 0, root_path.length-1 ) if path.start_with?( root_path )
     if request.form_data?
       # it's uncommon, but possible that we have both
       query_string += "&" unless query_string.blank?
