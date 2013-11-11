@@ -392,7 +392,7 @@ class ApplicationController < ActionController::Base
   end
 
   def get_request_path
-    path = request.path
+    path = request.path_info
     query_string = request.query_string
     if request.form_data?
       # it's uncommon, but possible that we have both
