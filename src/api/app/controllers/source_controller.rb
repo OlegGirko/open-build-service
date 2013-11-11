@@ -250,7 +250,7 @@ class SourceController < ApplicationController
     end
 
     # exec
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:rev, :linkrev, :emptylink, :expand, :view, :extension, :lastworking, :withlinked, :meta, :deleted, :parse, :arch, :repository, :product])
     pass_to_backend path
   end
@@ -445,7 +445,7 @@ class SourceController < ApplicationController
 
     # init
     # assemble path for backend
-    path = request.path
+    path = request.path_info
     path += build_query_from_hash(params, [:user, :comment, :rev])
     #allowed = false
     request_data = request.raw_post
@@ -579,7 +579,7 @@ class SourceController < ApplicationController
 
   # GET /source/:project/_config
   def show_project_config
-    path = request.path
+    path = request.path_info
     path += build_query_from_hash(params, [:rev])
     pass_to_backend path
   end
@@ -601,7 +601,7 @@ class SourceController < ApplicationController
     end
 
     # assemble path for backend
-    path = request.path
+    path = request.path_info
     path += build_query_from_hash(params, [:user, :comment])
 
     pass_to_backend path
@@ -610,7 +610,7 @@ class SourceController < ApplicationController
   def pubkey_path
     # check for project
     @prj = Project.get_by_name(params[:project])
-    request.path + build_query_from_hash(params, [:user, :comment, :meta, :rev])
+    request.path_info + build_query_from_hash(params, [:user, :comment, :meta, :rev])
   end
 
   # GET /source/:project/_pubkey and /_sslcert
@@ -669,7 +669,7 @@ class SourceController < ApplicationController
     if params.has_key?(:rev) or pack.nil? # and not pro_name
                                           # check if this comes from a remote project, also true for _project package
                                           # or if rev it specified we need to fetch the meta from the backend
-      answer = Suse::Backend.get(request.path)
+      answer = Suse::Backend.get(request.path_info)
       if answer
         render :text => answer.body.to_s, :content_type => 'text/xml'
       else
@@ -1097,7 +1097,7 @@ class SourceController < ApplicationController
     # is there any value in this call?
     Project.find_by_name params[:project]
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :user, :comment])
     pass_to_backend path
   end
@@ -1124,12 +1124,12 @@ class SourceController < ApplicationController
       raise CmdExecutionNoPermission.new "no permission to execute command 'undelete'"
     end
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :user, :comment])
     pass_to_backend path
 
     # read meta data from backend to restore database object
-    path = request.path + '/_meta'
+    path = request.path_info + '/_meta'
     prj = Project.new(name: params[:project])
     Project.transaction do
       prj.update_from_xml(Xmlhash.parse(backend_get(path)))
@@ -1313,7 +1313,7 @@ class SourceController < ApplicationController
   # Collect all project source services for a package
   # POST /source/<project>/<package>?cmd=getprojectservices
   def package_command_getprojectservices
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd])
     pass_to_backend path
   end
@@ -1358,12 +1358,12 @@ class SourceController < ApplicationController
       raise CmdExecutionNoPermission.new "no permission to create package in project #{@target_project_name}"
     end
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :user, :comment])
     pass_to_backend path
 
     # read meta data from backend to restore database object
-    path = request.path + '/_meta'
+    path = request.path_info + '/_meta'
     prj = Project.find_by_name!(params[:project])
     pkg = prj.packages.new(name: params[:package])
     pkg.update_from_xml(Xmlhash.parse(backend_get(path)))
@@ -1373,7 +1373,7 @@ class SourceController < ApplicationController
   # FIXME: obsolete this for 3.0
   # POST /source/<project>/<package>?cmd=createSpecFileTemplate
   def package_command_createSpecFileTemplate
-    specfile_path = "#{request.path}/#{params[:package]}.spec"
+    specfile_path = "#{request.path_info}/#{params[:package]}.spec"
     begin
       backend_get( specfile_path )
       render_error :status => 400, :errorcode => 'spec_file_exists',
@@ -1395,7 +1395,7 @@ class SourceController < ApplicationController
     # check for sources in this or linked project
     unless @package
       # check if this is a package on a remote OBS instance
-      answer = Suse::Backend.get(request.path)
+      answer = Suse::Backend.get(request.path_info)
       unless answer
         render_error :status => 400, :errorcode => 'unknown_package',
           :message => "Unknown package '#{package_name}'"
@@ -1424,7 +1424,7 @@ class SourceController < ApplicationController
   # POST /source/<project>/<package>?cmd=commit
   def package_command_commit
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :user, :comment, :rev, :linkrev, :keeplink, :repairlink])
     pass_to_backend path
 
@@ -1436,7 +1436,7 @@ class SourceController < ApplicationController
   # POST /source/<project>/<package>?cmd=commitfilelist
   def package_command_commitfilelist
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :user, :comment, :rev, :linkrev, :keeplink, :repairlink])
     answer = pass_to_backend path
 
@@ -1450,7 +1450,7 @@ class SourceController < ApplicationController
     #oproject_name = params[:oproject]
     #opackage_name = params[:opackage]
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :rev, :orev, :oproject, :opackage, :expand ,:linkrev, :olinkrev,
                                            :unified ,:missingok, :meta, :file, :filelimit, :tarlimit,
                                            :view, :withissues, :onlyissues])
@@ -1459,7 +1459,7 @@ class SourceController < ApplicationController
 
   # POST /source/<project>/<package>?cmd=linkdiff
   def package_command_linkdiff
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :rev, :unified, :linkrev, :file, :filelimit, :tarlimit,
                                            :view, :withissues, :onlyissues])
     pass_to_backend path
@@ -1467,7 +1467,7 @@ class SourceController < ApplicationController
 
   # POST /source/<project>/<package>?cmd=servicediff
   def package_command_servicediff
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :rev, :unified, :file, :filelimit, :tarlimit, :view, :withissues, :onlyissues])
     pass_to_backend path
   end
@@ -1565,7 +1565,7 @@ class SourceController < ApplicationController
   # POST /source/<project>/<package>?cmd=runservice
   def package_command_runservice
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd, :comment, :user])
     pass_to_backend path
 
@@ -1575,7 +1575,7 @@ class SourceController < ApplicationController
   # POST /source/<project>/<package>?cmd=deleteuploadrev
   def package_command_deleteuploadrev
 
-    path = request.path
+    path = request.path_info
     path << build_query_from_hash(params, [:cmd])
     pass_to_backend path
   end
