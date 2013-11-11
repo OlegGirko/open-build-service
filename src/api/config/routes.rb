@@ -2,7 +2,7 @@ OBSApi::Application.routes.draw do
 
   defaults :format => 'xml' do
 
-    match '/' => 'main#index'
+    root to: 'main#index'
 
     resource :configuration, :only => [:show, :update]
 

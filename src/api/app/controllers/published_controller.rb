@@ -16,7 +16,9 @@ class PublishedController < ApplicationController
       return
     end
 
-    answer = Suse::Backend.get(request.path)
+    reqpath = request.path
+    reqpath.slice!(0, root_path.length-1) if reqpath.start_with?(root_path)
+    answer = Suse::Backend.get(reqpath)
     data=REXML::Document.new(answer.body.to_s)
     if answer
       render :text => data.to_s, :content_type => "text/xml"

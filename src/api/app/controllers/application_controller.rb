@@ -377,6 +377,8 @@ class ApplicationController < ActionController::API
       end
     end
 
+    path.slice!( 0, root_path.length-1 ) if path.start_with?( root_path )
+
     case request.method.to_s.downcase
     when "get"
       forward_from_backend( path )

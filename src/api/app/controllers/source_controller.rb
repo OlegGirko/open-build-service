@@ -904,7 +904,9 @@ class SourceController < ApplicationController
       if params.has_key?(:rev) or pack.nil? # and not pro_name 
         # check if this comes from a remote project, also true for _project package
         # or if rev it specified we need to fetch the meta from the backend
-        answer = Suse::Backend.get(request.path)
+        reqpath = request.path
+        reqpath.slice!(0, root_path.length-1) if reqpath.start_with?(root_path)
+        answer = Suse::Backend.get(reqpath)
         if answer
           render :text => answer.body.to_s, :content_type => 'text/xml'
         else
@@ -1026,7 +1028,9 @@ class SourceController < ApplicationController
 
       if pack.nil? and request.get?
         # Check if this is a package on a remote OBS instance
-        answer = Suse::Backend.get(request.path)
+        reqpath = request.path
+        reqpath.slice!(0, root_path.length-1) if reqpath.start_with?(root_path)
+        answer = Suse::Backend.get(reqpath)
         if answer
           pass_to_backend
           return
@@ -1709,7 +1713,9 @@ class SourceController < ApplicationController
     pkg = Package.find_by_project_and_name(project_name, package_name)
     unless pkg
       # check if this is a package on a remote OBS instance
-      answer = Suse::Backend.get(request.path)
+      reqpath = request.path
+      reqpath.slice!(0, root_path.length-1) if reqpath.start_with?(root_path)
+      answer = Suse::Backend.get(reqpath)
       unless answer
         render_error :status => 400, :errorcode => 'unknown_package',
           :message => "Unknown package '#{package_name}'"
