@@ -261,7 +261,7 @@ CREATE TABLE `flags` (
   `architecture_id` int(11) DEFAULT NULL,
   `position` int(11) NOT NULL,
   `flag` enum('useforbuild','sourceaccess','binarydownload','debuginfo','build','publish','access','lock') CHARACTER SET utf8 NOT NULL,
-  `package` tinyblob DEFAULT NULL,
+  `pkgname` tinyblob DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_flags_on_db_package_id` (`db_package_id`),
   KEY `index_flags_on_db_project_id` (`db_project_id`),
@@ -1055,6 +1055,8 @@ INSERT INTO schema_migrations (version) VALUES ('20130301100000');
 INSERT INTO schema_migrations (version) VALUES ('20130903114302');
 
 INSERT INTO schema_migrations (version) VALUES ('20131022114302');
+
+INSERT INTO schema_migrations (version) VALUES ('20131119195511');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
