@@ -14,7 +14,7 @@ class Repository < ActiveRecord::Base
   has_many :repository_architectures, :order => "position", :dependent => :delete_all
   has_many :architectures, :through => :repository_architectures, :order => "position"
 
-  attr_accessible :name
+  attr_accessible :name, :linkedbuild
 
   scope :not_remote, where(:remote_project_name => nil)
 
