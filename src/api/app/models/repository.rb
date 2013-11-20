@@ -15,6 +15,8 @@ class Repository < ActiveRecord::Base
   has_many :repository_architectures, -> { order("position") }, :dependent => :delete_all, inverse_of: :repository
   has_many :architectures, -> { order("position") }, :through => :repository_architectures
 
+  attr_accessible :linkedbuild
+
   scope :not_remote, -> { where(:remote_project_name => nil) }
 
   validate :validate_duplicates, :on => :create
