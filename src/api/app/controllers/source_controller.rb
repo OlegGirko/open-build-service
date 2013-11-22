@@ -1490,9 +1490,6 @@ class SourceController < ApplicationController
           p.flags.create(:status => f.status, :flag => f.flag, :architecture => f.architecture, :repo => f.repo) unless f.flag == 'lock'
         end
 
-        p.flags.create(:status => 'disable', :flag => 'build')
-        p.flags.create(:status => 'disable', :flag => 'publish')
-
         oprj.linkedprojects.each do |l|
           p.linkedprojects.create( :linked_remote_project_name => l.linked_remote_project_name , :position => l.position ) if l.linked_remote_project_name
           p.linkedprojects.create( :linked_db_project => Project.get_by_name(l.linked_db_project.name) , :position => l.position ) if l.linked_db_project
@@ -1515,10 +1512,27 @@ class SourceController < ApplicationController
     end unless p
 
     if params.has_key? :nodelay
+
+      # Disable build temporarily if not disabled already
+      if p.flags.where(status: 'disable', flag: 'build', repo: nil, architecture_id: nil, pkgname: nil).any?
+        build_disable = nil
+      else
+        build_disable = p.flags.create(:status => 'disable', :flag => 'build')
+      end
+
+      # Disable publish temporarily if not disabled already
+      if p.flags.where(status: 'disable', flag: 'publish', repo: nil, architecture_id: nil, pkgname: nil).any?
+        publish_disable = nil
+      else
+        publish_disable = p.flags.create(:status => 'disable', :flag => 'publish')
+      end
+
       p.do_project_copy(params)
-      p.flags.delete_if { |f| f.flag == "build" and f.status == "disable" and f.architecture.nil? and f.repo.nil? and f.pkgname.nil? }
-      p.flags.delete_if { |f| f.flag == "publish" and f.status == "disable" and f.architecture.nil? and f.repo.nil? and f.pkgname.nil? }
-      p.store
+
+      # Re-enable build and publish if they were temporarily disabled
+      build_disable.destroy if build_disable
+      publish_disable.destroy if publish_disable
+
       render_ok
     else
       # inject as job
