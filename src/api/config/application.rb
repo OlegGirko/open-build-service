@@ -2,8 +2,14 @@ require_relative 'boot'
 
 require 'rails/all'
 
-# Assets should be precompiled for production (so we don't need the gems loaded then)
-Bundler.require(*Rails.groups(assets: ['development', 'test']))
+gemfile_in = File.expand_path('../../Gemfile.in', __FILE__)
+if File.exist?(gemfile_in)
+  require 'bundler_ext'
+  BundlerExt.system_require(gemfile_in, *Rails.groups(assets: ['development', 'test']))
+else
+  # Assets should be precompiled for production (so we don't need the gems loaded then)
+  Bundler.require(*Rails.groups(assets: ['development', 'test']))
+end
 require_relative '../lib/engines/base.rb'
 require_relative '../lib/rabbitmq_bus.rb'
 OBSEngine.load_engines
