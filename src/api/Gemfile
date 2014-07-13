@@ -84,6 +84,8 @@ group :test do
   gem 'poltergeist', '>= 1.4'
   # for mocking and stubbing
   gem 'mocha', '> 0.13.0', require: false
+
+  gem 'json'
 end
 
 # Gems used only during development not required in production environments by default.
