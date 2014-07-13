@@ -129,6 +129,8 @@ group :test do
   gem 'rantly', '>= 1.1.0'
   # To ensure consistent Git commits
   gem 'git-cop', '>=1.5.0'
+  # for tests
+  gem 'json'
 end
 
 # Gems used only during development not required in production environments by default.
