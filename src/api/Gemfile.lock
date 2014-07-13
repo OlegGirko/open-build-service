@@ -524,6 +524,7 @@ DEPENDENCIES
   jquery-datatables
   jquery-rails
   jquery-ui-rails (~> 4.2.1)
+  json
   kaminari
   launchy
   lograge
