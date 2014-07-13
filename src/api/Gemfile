@@ -111,6 +111,8 @@ group :test do
   gem 'rails-controller-testing'
   # To generate random data
   gem 'rantly'
+  # for tests
+  gem 'json'
 end
 
 # Gems used only during development not required in production environments by default.
