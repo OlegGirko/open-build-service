@@ -1434,7 +1434,7 @@ class RequestControllerTest < ActionDispatch::IntegrationTest
     assert_xml_tag(:tag => 'review', :attributes => { by_group: 'test_group' })
 
     # test search via xpath as well
-    get 'search/request', :match => "state/@name='review' and review[@by_group='test_group' and @state='new']"
+    get '/search/request', :match => "state/@name='review' and review[@by_group='test_group' and @state='new']"
     assert_response :success
     assert_xml_tag(:tag => 'collection', :child => { tag: 'request' })
     assert_xml_tag(:tag => 'review', :attributes => { by_group: 'test_group' })
@@ -3122,7 +3122,7 @@ class RequestControllerTest < ActionDispatch::IntegrationTest
     assert !important.blank?
     Timecop.freeze(1)
 
-    get 'search/request', :match => "target/@project = 'home:Iggy'"
+    get '/search/request', :match => "target/@project = 'home:Iggy'"
     assert_response :success
     assert_xml_tag(:tag => 'collection', :child => { tag: 'request' },
                    :attributes => { :matches => 6 })
@@ -3138,7 +3138,7 @@ class RequestControllerTest < ActionDispatch::IntegrationTest
               <value>100</value>
             </attribute></attributes>"
     assert_response :success
-    get 'search/request', :match => "target/@project = 'home:Iggy'"
+    get '/search/request', :match => "target/@project = 'home:Iggy'"
     assert_response :success
     assert_xml_tag(:tag => 'collection', :child => { tag: 'request' },
                    :attributes => { :matches => 6 })
@@ -3150,7 +3150,7 @@ class RequestControllerTest < ActionDispatch::IntegrationTest
               <value>100</value>
             </attribute></attributes>"
     assert_response :success
-    get 'search/request', :match => "target/@project = 'home:Iggy'"
+    get '/search/request', :match => "target/@project = 'home:Iggy'"
     assert_response :success
     assert_xml_tag(:tag => 'collection', :child => { tag: 'request' },
                    :attributes => { :matches => 6 })
@@ -3164,7 +3164,7 @@ class RequestControllerTest < ActionDispatch::IntegrationTest
               <value>101</value>
             </attribute></attributes>"
     assert_response :success
-    get 'search/request', :match => "target/@project = 'home:Iggy'"
+    get '/search/request', :match => "target/@project = 'home:Iggy'"
     assert_response :success
     assert_xml_tag(:tag => 'collection', :child => { tag: 'request' },
                    :attributes => { :matches => 6 })
