@@ -107,7 +107,7 @@ group :assets do
   # to use sass in the asset pipeline
   gem 'sass-rails', '~> 4.0.3'
   # assets for jQuery DataTables
-  gem 'jquery-datatables-rails'
+  gem 'jquery-datatables-rails', '~> 1.12'
   # assets for the text editor
   gem 'codemirror-rails', '>= 4.2'
   # assets for jQuery tokeninput
