@@ -102,11 +102,12 @@ srcsrv = Thread.new do
     begin
       line = srcsrv_out.gets
       break if line.nil?
-      logger.debug line.strip unless line.empty?
+      logger.debug 'bs_srcserver: ' + line.strip unless line.empty?
     rescue IOError
       break
     end
   end
+  logger.debug 'bs_srcserver stopped'
 end
 
 puts 'Starting backend repserver...'
@@ -117,11 +118,12 @@ reposrv = Thread.new do
     begin
       line = reposrv_out.gets
       break if line.nil?
-      logger.debug line.strip unless line.empty?
+      logger.debug 'bs_repserver: ' + line.strip unless line.empty?
     rescue IOError
       break
     end
   end
+  logger.debug 'bs_repserver stopped'
 end
 
 while !dienow
@@ -157,11 +159,12 @@ servicesrv = Thread.new do
     begin
       line = servicesrv_out.gets
       break if line.nil?
-      logger.debug line.strip unless line.empty?
+      logger.debug 'bs_service: ' + line.strip unless line.empty?
     rescue IOError
       break
     end
   end
+  logger.debug 'bs_service stopped'
 end
 
 puts 'Starting backend publisher...'
@@ -172,11 +175,12 @@ publishsrv = Thread.new do
     begin
       line = publishsrv_out.gets
       break if line.nil?
-      logger.debug line.strip unless line.empty?
+      logger.debug 'bs_publish: ' + line.strip unless line.empty?
     rescue IOError
       break
     end
   end
+  logger.debug 'bs_publish stopped'
 end
 
 while !dienow
