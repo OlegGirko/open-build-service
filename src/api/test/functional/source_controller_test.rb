@@ -3264,6 +3264,14 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'have the same user role twice in package meta' do
+    login_tom
+    get '/source/home:Iggy/_meta'
+    assert_response :success
+    orig_prj_meta = @response.body
+    get '/source/home:Iggy/TestPack/_meta'
+    assert_response :success
+    orig_pkg_meta = @response.body
+
     ret = duplicated_user_test('package', 'user', '/source/home:Iggy/TestPack/_meta')
     assert_equal({ 'name' => 'TestPack',
                    'project' => 'home:Iggy',
@@ -3301,6 +3309,13 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
                    'group' =>
                        [{ 'groupid' => 'test_group', 'role' => 'bugowner' },
                         { 'groupid' => 'test_group', 'role' => 'maintainer' }] }, ret)
+
+    # restore (esp in backend)
+    login_king
+    put '/source/home:Iggy/_meta', orig_prj_meta
+    assert_response :success
+    put '/source/home:Iggy/TestPack/_meta', orig_pkg_meta
+    assert_response :success
   end
 
   test 'store invalid package' do
