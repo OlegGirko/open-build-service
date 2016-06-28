@@ -48,10 +48,10 @@ log_files:
 	$(foreach logfile,$(OBS_API_LOGS),$(shell touch $(DESTDIR)$(OBS_API_PREFIX)/log/$(logfile) ))
 
 build: config
-	$(shell [ -d $(DESTDIR)/srv/www/obs/api/.bundle ] && rm -rf $(DESTDIR)/srv/www/obs/api/.bundle)
+	$(shell [ -d $(DESTDIR)$(OBS_API_PREFIX)/.bundle ] && rm -rf $(DESTDIR)$(OBS_API_PREFIX)/.bundle)
 	# we need to have *something* as secret key
-	echo "" | sha256sum| cut -d\  -f 1 > $(DESTDIR)/srv/www/obs/api/config/secret.key
-	cd $(DESTDIR)/srv/www/obs/api ;\
+	echo "" | sha256sum| cut -d\  -f 1 > $(DESTDIR)$(OBS_API_PREFIX)/config/secret.key
+	cd $(DESTDIR)$(OBS_API_PREFIX) ;\
 	bundle exec rake assets:precompile RAILS_ENV=production RAILS_GROUPS=assets ;\
 	rm -rf tmp/cache/sass tmp/cache/assets config/secret.key ;\
 	$(OBS_API_BUNDLER_OPTS) bundle config --local frozen 1 ;\
@@ -60,7 +60,7 @@ build: config
 	$(INSTALL) config/database.yml.example $(DESTDIR)$(OBS_API_PREFIX)/config/database.yml
 	# fixed hardlinking problem in SLE 11
 	echo "# This is to prevent fdupes from hardlinking" >> $(DESTDIR)$(OBS_API_PREFIX)/config/database.yml
-	: >  $(DESTDIR)/srv/www/obs/api/log/production.log
+	: >  $(DESTDIR)$(OBS_API_PREFIX)/log/production.log
 	sed -i -e 's,^api_version.*,api_version = "$(OBS_VERSION)",'  $(DESTDIR)$(OBS_API_PREFIX)/config/initializers/02_apiversion.rb
 
 test_unit:
