@@ -562,9 +562,15 @@ popd
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 [-d $RPM_BUILD_ROOT/etc/sysconfig] || mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 install -m 0644 dist/sysconfig.obs-server $RPM_BUILD_ROOT/etc/sysconfig/obs-server
+sed -i \
+    -e 's|/srv/obs|%{obs_backend_data_dir}|g' \
+    $RPM_BUILD_ROOT/etc/sysconfig/obs-server
 %else
 mkdir -p $RPM_BUILD_ROOT/%{_fillupdir}
 install -m 0644 dist/sysconfig.obs-server $RPM_BUILD_ROOT/%{_fillupdir}
+sed -i \
+    -e 's|/srv/obs|%{obs_backend_data_dir}|g' \
+    $RPM_BUILD_ROOT/%{_fillupdir}/sysconfig.obs-server
 %endif
 
 # perl-OBS-XML
