@@ -16,7 +16,10 @@ install_obsapisetup: system_dirs
 	$(INSTALL) -m 755 obsapisetup $(DESTDIR)/etc/init.d/obsapisetup
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 	sed -i \
-	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|' \
+	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(DESTDIR)/etc/init.d/obsapisetup \
 	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 
@@ -24,12 +27,20 @@ install_apache:
 	$(INSTALL) -d -m 755  $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)
 	$(INSTALL) -m 644 $(APACHE_VHOST_CONF) $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
 	$(INSTALL) -m 644 $(APACHE_VHOST_CONTAINER_REGISTRY_CONF) $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/$(APACHE_VHOST_CONTAINER_REGISTRY_CONF)
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/$(APACHE_VHOST_CONTAINER_REGISTRY_CONF) \
+	    $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
 
 install_initscripts: system_dirs
 	$(foreach script,$(INIT_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/etc/init.d/$(script)) )
 	$(foreach script,$(INIT_SCRIPTS),$(shell ln -sf /etc/init.d/$(script) $(DESTDIR)/usr/sbin/rc$(script)) )
 	sed -i \
-	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|' \
+	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(INIT_SCRIPTS:%=$(DESTDIR)/etc/init.d/%)
 
 install_systemd_services: system_dirs
@@ -43,11 +54,16 @@ install_project_update: system_dirs
 install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
 	sed -i \
-	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|' \
+	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)/var/adm/fillup-templates/
+	sed -i \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)/var/adm/fillup-templates/sysconfig.obs-server
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
@@ -60,6 +76,11 @@ install_obs_bin: system_dirs
 install_crontabs:
 	$(INSTALL) -m 644 cleanup_scm_cache.cron $(DESTDIR)/etc/cron.d/cleanup_scm_cache
 	$(INSTALL) -m 644 obs_api_delayed_jobs_monitor.cron $(DESTDIR)/etc/cron.d/obs_api_delayed_jobs_monitor
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_LOG_DIR)|g' \
+	    $(DESTDIR)/etc/cron.d/cleanup_scm_cache \
+	    $(DESTDIR)/etc/cron.d/obs_api_delayed_jobs_monitor
 
 system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_BACKEND_PREFIX)
@@ -82,10 +103,12 @@ install_overview:
 	$(INSTALL) -m 644 overview.html.TEMPLATE $(DESTDIR)$(OBS_DOCUMENT_ROOT)/overview
 
 install_registry_dirs:
-	mkdir -p $(DESTDIR)/srv/www/obs/container-registry{,/log,/htdocs}
+	mkdir -p $(DESTDIR)$(OBS_DOCUMENT_ROOT)/container-registry{,/log,/htdocs}
 
 install_tests_appliance:
 	cp -r ./t/*	$(DESTDIR)/usr/lib/obs/tests/appliance/
+	find $(DESTDIR)/usr/lib/obs/tests/appliance -type f -print | \
+	  xargs sed -i -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g'
 
 test_unit:
 	prove -v t/*.t
