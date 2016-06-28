@@ -19,11 +19,19 @@ install_obsapisetup: system_dirs
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 	sed -i \
 	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 
 install_apache:
 	$(INSTALL) -d -m 755  $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)
 	$(INSTALL) -m 644 $(APACHE_VHOST_CONF) $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
 
 install_systemd_services: system_dirs
 	$(foreach target,$(SYSTEMD_TARGET_FILES),$(shell $(INSTALL) -m 644 ./systemd/$(target).target $(DESTDIR)$(UNITDIR)$(target).target) )
@@ -32,6 +40,7 @@ install_systemd_services: system_dirs
 	sed -i \
 	    -e 's|^\(User *= *\)wwwrun|\1$(APACHE_USER)|g' \
 	    -e 's|^\(Group *= *\)www|\1$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
 	    $(SYSTEMD_SERVICE_FILES:%=$(DESTDIR)$(UNITDIR)%.service) \
 	    $(SYSTEMD_SERVICE_FILES_WITHOUT_LINK:%=$(DESTDIR)$(UNITDIR)%.service)
 
@@ -43,10 +52,15 @@ install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
 	sed -i \
 	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)$(FILLUPDIR)
+	sed -i \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)$(FILLUPDIR)/sysconfig.obs-server
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
@@ -55,9 +69,18 @@ install_slp: system_dirs
 install_obs_bin: system_dirs
 	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/bin/$(script)) )
 	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/sbin/$(script)) )
+	sed -i \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(OBS_BIN_SCRIPTS:%=$(DESTDIR)/usr/bin/%) \
+	    $(OBS_SBIN_SCRIPTS:%=$(DESTDIR)/usr/sbin/%)
 
 install_crontabs:
 	$(INSTALL) -m 644 cleanup_scm_cache.cron $(DESTDIR)/etc/cron.d/cleanup_scm_cache
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_LOG_DIR)|g' \
+	    $(DESTDIR)/etc/cron.d/cleanup_scm_cache \
 
 system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_BACKEND_PREFIX)
@@ -76,6 +99,8 @@ install_overview:
 
 install_tests_appliance:
 	cp -r ./t/*	$(DESTDIR)/usr/lib/obs/tests/appliance/
+	find $(DESTDIR)/usr/lib/obs/tests/appliance -type f -print | \
+	  xargs sed -i -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g'
 
 test_unit:
 	prove -v t/*.t
