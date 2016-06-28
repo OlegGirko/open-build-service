@@ -73,11 +73,11 @@ system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_FILLUP_DIR)
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/share/doc/packages/obs-devel
+	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_DEVEL_DOC_DIR)
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/obs/tests/appliance
 
 install_devel_docs:
-	$(INSTALL) -m 644 README.devel $(DESTDIR)/usr/share/doc/packages/obs-devel/README.devel
+	$(INSTALL) -m 644 README.devel $(DESTDIR)$(OBS_DEVEL_DOC_DIR)/README.devel
 
 install_overview:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_DOCUMENT_ROOT)/overview
