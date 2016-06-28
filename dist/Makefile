@@ -10,14 +10,14 @@ install: install_obsapisetup install_apache install_initscripts install_project_
 #install_overview
 
 install_obsapisetup: system_dirs
-	$(INSTALL) -m 755 obsapisetup $(DESTDIR)/etc/init.d/obsapisetup
+	$(INSTALL) -m 755 obsapisetup $(DESTDIR)$(INITDDIR)/obsapisetup
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 	sed -i \
 	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|g' \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
 	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
-	    $(DESTDIR)/etc/init.d/obsapisetup \
+	    $(DESTDIR)$(INITDDIR)/obsapisetup \
 	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 
 install_apache:
@@ -30,16 +30,16 @@ install_apache:
 	    $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
 
 install_initscripts: system_dirs
-	$(foreach script,$(INIT_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/etc/init.d/$(script)) )
-	$(foreach script,$(INIT_SCRIPTS),$(shell ln -sf /etc/init.d/$(script) $(DESTDIR)/usr/sbin/rc$(script)) )
+	$(foreach script,$(INIT_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(INITDDIR)/$(script)) )
+	$(foreach script,$(INIT_SCRIPTS),$(shell ln -sf $(INITDDIR)/$(script) $(DESTDIR)$(SBINDIR)/rc$(script)) )
 	sed -i \
 	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|g' \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
-	    $(INIT_SCRIPTS:%=$(DESTDIR)/etc/init.d/%)
+	    $(INIT_SCRIPTS:%=$(DESTDIR)$(INITDDIR)/%)
 
 install_project_update: system_dirs
-	$(INSTALL) -m 0755 obs_project_update $(DESTDIR)/usr/sbin/obs_project_update
+	$(INSTALL) -m 0755 obs_project_update $(DESTDIR)$(SBINDIR)/obs_project_update
 
 
 install_logrotate: system_dirs
@@ -61,16 +61,16 @@ install_slp: system_dirs
 	$(INSTALL) -m 644 obs.repo_server.reg $(DESTDIR)/etc/slp.reg.d/
 
 install_obs_bin: system_dirs
-	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/bin/$(script)) )
-	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/sbin/$(script)) )
+	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(BINDIR)/$(script)) )
+	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(SBINDIR)/$(script)) )
 
 system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_BACKEND_PREFIX)
-	$(INSTALL) -d -m 755 $(DESTDIR)/etc/init.d/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(INITDDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/logrotate.d/
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/slp.reg.d/
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/bin/
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/sbin/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)/var/adm/fillup-templates
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/share/doc/packages/obs-devel
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/obs/tests/appliance
