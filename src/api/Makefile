@@ -32,7 +32,7 @@ docs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_APIDOCS_PREFIX)/api
 	cp -av ../../docs/api/api $(DESTDIR)$(OBS_APIDOCS_PREFIX)
 	ln -sf $(OBS_APIDOCS_PREFIX)/api/ $(DESTDIR)$(OBS_API_PREFIX)/public/schema
-	echo 'CONFIG["schema_location"] ||= File.expand_path("../docs/api/")' >> $(DESTDIR)$(OBS_API_PREFIX)/config/environment.rb
+	echo 'CONFIG["schema_location"] ||= File.expand_path("$(OBS_APIDOCS_PREFIX)/api/")' >> $(DESTDIR)$(OBS_API_PREFIX)/config/environment.rb
 
 config: prepare_dirs
 	# we need config also in building environment, otherwise rake will break
