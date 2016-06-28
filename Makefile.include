@@ -1,4 +1,7 @@
-INSTALL=/usr/bin/install
+BINDIR=/usr/bin
+SBINDIR=/usr/sbin
+
+INSTALL=$(BINDIR)/install
 OBS_BACKEND_PREFIX=/usr/lib/obs/server
 OBS_BACKEND_DATA_DIR=/srv/obs
 OBS_DOCUMENT_ROOT=/srv/www/obs
