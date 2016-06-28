@@ -51,10 +51,11 @@ install_logrotate: system_dirs
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
-	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)/var/adm/fillup-templates/
+	$(INSTALL) -m 0644 sysconfig.obs-server \
+	    $(DESTDIR)$(OBS_FILLUP_DIR)/$(OBS_FILLUP_FILE)
 	sed -i \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
-	    $(DESTDIR)/var/adm/fillup-templates/sysconfig.obs-server
+	    $(DESTDIR)$(OBS_FILLUP_DIR)/$(OBS_FILLUP_FILE)
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
@@ -75,7 +76,7 @@ system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/cron.d/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(SBINDIR)/
-	$(INSTALL) -d -m 755 $(DESTDIR)/var/adm/fillup-templates
+	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_FILLUP_DIR)
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/share/doc/packages/obs-devel
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/obs/tests/appliance
 
