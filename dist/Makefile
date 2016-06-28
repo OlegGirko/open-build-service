@@ -17,6 +17,12 @@ install: install_obsapisetup install_apache install_project_update install_logro
 install_obsapisetup: system_dirs
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 	$(INSTALL) -m 755 functions.setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/functions.setup-appliance.sh
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh \
+	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/functions.setup-appliance.sh
 
 install_apache:
 	$(INSTALL) -d -m 755  $(DESTDIR)$(APACHE_CONFDIR_VHOST)
@@ -47,6 +53,8 @@ install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
 	sed -i \
 	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_slp: system_dirs
@@ -56,9 +64,17 @@ install_slp: system_dirs
 install_obs_bin: system_dirs
 	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/bin/$(script)) )
 	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/sbin/$(script)) )
+	sed -i \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(OBS_BIN_SCRIPTS:%=$(DESTDIR)/usr/bin/%) \
+	    $(OBS_SBIN_SCRIPTS:%=$(DESTDIR)/usr/sbin/%)
 
 install_crontabs:
 	$(INSTALL) -m 644 cleanup_scm_cache.cron $(DESTDIR)/etc/cron.d/cleanup_scm_cache
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)/etc/cron.d/cleanup_scm_cache \
 
 system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_BACKEND_PREFIX)
@@ -76,6 +92,8 @@ install_overview:
 
 install_tests_appliance:
 	cp -r ./t/*	$(DESTDIR)/usr/lib/obs/tests/appliance/
+	find $(DESTDIR)/usr/lib/obs/tests/appliance -type f -print | \
+	  xargs sed -i -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g'
 
 test_unit:
 	prove -v t/*.t
