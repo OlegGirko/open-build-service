@@ -2,7 +2,6 @@ include ../../Makefile.include
 -include ../../Makefile.local
 
 OBS_BACKEND_DATA_SUBDIRS := build events info jobs log projects repos run sources trees workers service service/log
-OBS_BACKEND_DATA_DIR := /srv/obs
 
 prepare_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_BACKEND_PREFIX)
