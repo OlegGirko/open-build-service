@@ -45,6 +45,9 @@ install_project_update: system_dirs
 
 install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
+	sed -i \
+	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
