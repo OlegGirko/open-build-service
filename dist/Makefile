@@ -17,6 +17,9 @@ install: install_obsapisetup install_apache install_project_update install_logro
 
 install_obsapisetup: system_dirs
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
+	sed -i \
+	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|g' \
+	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 
 install_apache:
 	$(INSTALL) -d -m 755  $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)
@@ -26,6 +29,11 @@ install_systemd_services: system_dirs
 	$(foreach target,$(SYSTEMD_TARGET_FILES),$(shell $(INSTALL) -m 644 ./systemd/$(target).target $(DESTDIR)$(UNITDIR)$(target).target) )
 	$(foreach service,$(SYSTEMD_SERVICE_FILES) $(SYSTEMD_SERVICE_FILES_WITHOUT_LINK),$(shell $(INSTALL) -m 644 ./systemd/$(service).service $(DESTDIR)$(UNITDIR)$(service).service) )
 	$(foreach service,$(SYSTEMD_TARGET_FILES) $(SYSTEMD_SERVICE_FILES),$(shell ln -sf /usr/sbin/service $(DESTDIR)/usr/sbin/rc$(service) ) )
+	sed -i \
+	    -e 's|^\(User *= *\)wwwrun|\1$(APACHE_USER)|g' \
+	    -e 's|^\(Group *= *\)www|\1$(APACHE_GROUP)|g' \
+	    $(SYSTEMD_SERVICE_FILES:%=$(DESTDIR)$(UNITDIR)%.service) \
+	    $(SYSTEMD_SERVICE_FILES_WITHOUT_LINK:%=$(DESTDIR)$(UNITDIR)%.service)
 
 install_project_update: system_dirs
 	$(INSTALL) -m 0755 obs_project_update $(DESTDIR)/usr/sbin/obs_project_update
@@ -33,6 +41,9 @@ install_project_update: system_dirs
 
 install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
+	sed -i \
+	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)$(FILLUPDIR)
