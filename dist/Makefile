@@ -7,7 +7,7 @@ SYSTEMD_TARGET_FILES  := obs-api-support
 SYSTEMD_SERVICE_FILES := obs-clockwork obs-delayedjob-queue-project_log_rotate obs-delayedjob-queue-consistency_check obs-delayedjob-queue-default obs-delayedjob-queue-releasetracking obs-delayedjob-queue-issuetracking obs-delayedjob-queue-mailers obs-delayedjob-queue-staging obs-sphinx obsdeltastore obsdispatcher obsdodup obswarden obssrcserver obsrepserver obspublisher obssigner obsservice obsservicedispatch obsgetbinariesproxy obsclouduploadserver obsclouduploadworker obsscheduler obsworker obsstoragesetup obsapisetup obsnotifyforward obsredis
 SYSTEMD_SERVICE_FILES_WITHOUT_LINK := obs-delayedjob-queue-quick@
 
-FILLUPDIR             := /var/adm/fillup-templates
+FILLUPDIR             := $(OBS_FILLUP_DIR)
 
 UNITDIR=/usr/lib/systemd/system/
 
@@ -51,10 +51,11 @@ install_logrotate: system_dirs
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
-	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)$(FILLUPDIR)
+	$(INSTALL) -m 0644 sysconfig.obs-server \
+	    $(DESTDIR)$(FILLUPDIR)/$(OBS_FILLUP_FILE)
 	sed -i \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
-	    $(DESTDIR)$(FILLUPDIR)/sysconfig.obs-server
+	    $(DESTDIR)$(FILLUPDIR)/$(OBS_FILLUP_FILE)
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/

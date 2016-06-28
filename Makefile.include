@@ -7,6 +7,8 @@ OBS_BACKEND_DATA_DIR=/srv/obs
 OBS_DOCUMENT_ROOT=/srv/www/obs
 OBS_API_PREFIX=$(OBS_DOCUMENT_ROOT)/api
 OBS_APIDOCS_PREFIX=$(OBS_DOCUMENT_ROOT)/docs
+OBS_FILLUP_DIR=/var/adm/fillup-templates
+OBS_FILLUP_FILE=sysconfig.obs-server
 
 # TODO: find fix for RH in spec/Makefile
 # This here is preparation for multi distro support
