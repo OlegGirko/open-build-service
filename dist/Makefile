@@ -13,19 +13,29 @@ install_obsapisetup: system_dirs
 	$(INSTALL) -m 755 obsapisetup $(DESTDIR)/etc/init.d/obsapisetup
 	$(INSTALL) -m 755 setup-appliance.sh $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 	sed -i \
-	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|' \
+	    -e 's|wwwrun\.www|$(APACHE_USER).$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(DESTDIR)/etc/init.d/obsapisetup \
 	    $(DESTDIR)$(OBS_BACKEND_PREFIX)/setup-appliance.sh
 
 install_apache:
 	$(INSTALL) -d -m 755  $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)
 	$(INSTALL) -m 644 $(APACHE_VHOST_CONF) $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
+	sed -i \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/www/obs/overview|$(OBS_DOCUMENT_ROOT)/overview|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)$(APACHE_CONIFGDIR_VHOST)/obs.conf
 
 install_initscripts: system_dirs
 	$(foreach script,$(INIT_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/etc/init.d/$(script)) )
 	$(foreach script,$(INIT_SCRIPTS),$(shell ln -sf /etc/init.d/$(script) $(DESTDIR)/usr/sbin/rc$(script)) )
 	sed -i \
-	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|' \
+	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(INIT_SCRIPTS:%=$(DESTDIR)/etc/init.d/%)
 
 install_project_update: system_dirs
@@ -35,11 +45,16 @@ install_project_update: system_dirs
 install_logrotate: system_dirs
 	$(foreach config,$(LOGROTATE_CONFIGS),$(shell $(INSTALL) -m 644 $(config).logrotate $(DESTDIR)/etc/logrotate.d/$(config)) )
 	sed -i \
-	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|' \
+	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
+	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
 install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server $(DESTDIR)/var/adm/fillup-templates/
+	sed -i \
+	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    $(DESTDIR)/var/adm/fillup-templates/sysconfig.obs-server
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
@@ -69,6 +84,8 @@ install_overview:
 
 install_tests_appliance:
 	cp -r ./t/*	$(DESTDIR)/usr/lib/obs/tests/appliance/
+	find $(DESTDIR)/usr/lib/obs/tests/appliance -type f -print | \
+	  xargs sed -i -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g'
 
 test_unit:
 	prove -v t/*.t
