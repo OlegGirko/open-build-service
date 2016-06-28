@@ -17,7 +17,7 @@
 
 
 %if 0%{?fedora}
-%global sbin /usr/sbin
+%global sbin %{_sbindir}
 %else
 %global sbin /sbin
 %endif
@@ -175,7 +175,7 @@ BuildRequires:  perl-XML-Structured
 BuildRequires:  %{rubygem hana}
 BuildRequires:  %{rubygem json_refs}
 # /for the resolve_swagger_yaml.rb script
-PreReq:         /usr/sbin/useradd /usr/sbin/groupadd
+PreReq:         %{_sbindir}/useradd %{_sbindir}/groupadd
 BuildArch:      noarch
 Requires(pre):  obs-common
 Requires:       %{__obs_build_package_name} >= 20201211
@@ -400,9 +400,9 @@ This package provides the system account and group 'obsrun'.
 %{_sysusersdir}/system-user-obsrun.conf
 %else
 %pre -n system-user-obsrun
-getent group obsrun >/dev/null || /usr/sbin/groupadd -r obsrun
+getent group obsrun >/dev/null || %{_sbindir}/groupadd -r obsrun
 getent passwd obsrun >/dev/null || \
-    /usr/sbin/useradd -r -g obsrun -d /usr/lib/obs -s %{sbin}/nologin \
+    %{_sbindir}/useradd -r -g obsrun -d /usr/lib/obs -s %{sbin}/nologin \
     -c "User for build service backend" obsrun
 
 %files -n system-user-obsrun
@@ -431,7 +431,7 @@ This package provides the system account 'obsservicerun'
 %else
 %pre -n system-user-obsservicerun
 getent passwd obsservicerun >/dev/null || \
-    /usr/sbin/useradd -r -g obsrun -d %{obs_backend_data_dir}/service -s %{sbin}/nologin \
+    %{_sbindir}/useradd -r -g obsrun -d %{obs_backend_data_dir}/service -s %{sbin}/nologin \
     -c "" obsservicerun
 
 %files -n system-user-obsservicerun
@@ -464,7 +464,10 @@ export DESTDIR=$RPM_BUILD_ROOT
 export BUNDLE_FORCE_RUBY_PLATFORM=true
 
 cat <<EOF > Makefile.local
-INSTALL=/usr/bin/install
+BINDIR=%{_bindir}
+SBINDIR=%{_sbindir}
+
+INSTALL=%{_bindir}/install
 OBS_BACKEND_PREFIX=%{obs_backend_dir}
 OBS_BACKEND_DATA_DIR=%{obs_backend_data_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
@@ -869,10 +872,10 @@ fi
 %{_unitdir}/obswarden.service
 %{_unitdir}/obsnotifyforward.service
 %{_unitdir}/obsredis.service
-/usr/sbin/obs_admin
-/usr/sbin/obs-setup
-/usr/sbin/obs_serverstatus
-/usr/sbin/obsscheduler
+%{_sbindir}/obs_admin
+%{_sbindir}/obs-setup
+%{_sbindir}/obs_serverstatus
+%{_sbindir}/obsscheduler
 %if 0%{?suse_version}
 /usr/sbin/rcobsdispatcher
 /usr/sbin/rcobspublisher
@@ -987,7 +990,7 @@ usermod -a -G docker obsservicerun
 %files -n obs-worker
 %defattr(-,root,root)
 %{_unitdir}/obsworker.service
-/usr/sbin/obsworker
+%{_sbindir}/obsworker
 %if 0%{?suse_version}
 /usr/sbin/rcobsworker
 %endif
@@ -1121,14 +1124,14 @@ usermod -a -G docker obsservicerun
 %{obs_backend_dir}/setup-appliance.sh
 %{obs_backend_dir}/functions.setup-appliance.sh
 %{_unitdir}/obsstoragesetup.service
-/usr/sbin/obsstoragesetup
+%{_sbindir}/obsstoragesetup
 %if 0%{?suse_version}
 /usr/sbin/rcobsstoragesetup
 %endif
 
 %files -n obs-utils
 %defattr(-,root,root)
-/usr/sbin/obs_project_update
+%{_sbindir}/obs_project_update
 
 %files -n obs-tests-appliance
 %defattr(-,root,root)
