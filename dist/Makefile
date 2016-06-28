@@ -39,7 +39,7 @@ install_systemd_services: system_dirs
 	$(foreach service,$(SYSTEMD_TARGET_FILES) $(SYSTEMD_SERVICE_FILES),$(shell ln -sf /usr/sbin/service $(DESTDIR)/usr/sbin/rc$(service) ) )
 
 install_project_update: system_dirs
-	$(INSTALL) -m 0755 obs_project_update $(DESTDIR)/usr/sbin/obs_project_update
+	$(INSTALL) -m 0755 obs_project_update $(DESTDIR)$(SBINDIR)/obs_project_update
 
 
 install_logrotate: system_dirs
@@ -61,8 +61,8 @@ install_slp: system_dirs
 	$(INSTALL) -m 644 obs.repo_server.reg $(DESTDIR)/etc/slp.reg.d/
 
 install_obs_bin: system_dirs
-	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/bin/$(script)) )
-	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)/usr/sbin/$(script)) )
+	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(BINDIR)/$(script)) )
+	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(SBINDIR)/$(script)) )
 
 install_crontabs:
 	$(INSTALL) -m 644 cleanup_scm_cache.cron $(DESTDIR)/etc/cron.d/cleanup_scm_cache
@@ -76,8 +76,8 @@ system_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/logrotate.d/
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/slp.reg.d/
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/cron.d/
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/bin/
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/sbin/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(FILLUPDIR)
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/obs/tests/appliance
 	$(INSTALL) -d -m 755 $(DESTDIR)$(UNITDIR)
