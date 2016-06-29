@@ -9,6 +9,30 @@ MEMCACHED_PID_FILE=$TEMP_DIR/memcached.pid
 MYSQL_SOCKET_DIR=`mktemp -d`
 MYSQL_SOCKET=$MYSQL_SOCKET_DIR/mysql.socket
 
+MYSQL_SERVER=
+for dir in /usr/bin /usr/sbin /usr/libexec; do
+  if [ -x "$dir/mysqld" ]; then
+    MYSQL_SERVER="$dir/mysqld"
+    break
+  fi
+done
+if [ -z "$MYSQL_SERVER" ]; then
+  echo mysqld not found >&2
+  exit 1
+fi
+
+MEMCACHED_SERVER=
+for dir in /usr/bin /usr/sbin /usr/libexec; do
+  if [ -x "$dir/memcached" ]; then
+    MEMCACHED_SERVER="$dir/memcached"
+    break
+  fi
+done
+if [ -z "$MEMCACHED_SERVER" ]; then
+  echo memcached not found >&2
+  exit 1
+fi
+
 MYSQLD_USER=`whoami`
 if [[ $EUID == 0 ]];then
   MYSQLD_USER=mysql
@@ -31,7 +55,7 @@ rm -rf $MYSQL_DATADIR $MYSQL_SOCKET
 mkdir -p $MYSQL_BASEDIR
 chown -R $MYSQLD_USER $MYSQL_BASEDIR
 mysql_install_db --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR
-/usr/sbin/mysqld --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR --skip-networking --socket=$MYSQL_SOCKET &
+$MYSQL_SERVER --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR --skip-networking --socket=$MYSQL_SOCKET &
 sleep 2
 
 ##################### api
@@ -60,7 +84,7 @@ test:
 
 EOF
 
-/usr/sbin/memcached $MEMCACHED_USER -l 127.0.0.1 -d -P $MEMCACHED_PID_FILE || exit 1
+$MEMCACHED_SERVER $MEMCACHED_USER -l 127.0.0.1 -d -P $MEMCACHED_PID_FILE || exit 1
 
 # migration test
 export RAILS_ENV=migrate
