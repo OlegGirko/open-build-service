@@ -257,7 +257,7 @@ push(@files_to_remove,"$ev_dir/$file_name");
 # CLEANUP
 unshift(@files_to_remove,"$eventdir_base/$arch/$evname");
 
-map { ( -d $_ ) ? rmdir $_ : unlink $_ ; die "$_: $!" if $!;} @files_to_remove;
+map { ( -d $_ ) ? rmdir $_ : unlink $_ or die "$_: $!";} @files_to_remove;
 
 exit 0;
 
