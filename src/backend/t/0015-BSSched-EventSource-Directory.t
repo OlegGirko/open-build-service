@@ -258,8 +258,7 @@ push(@files_to_remove,"$ev_dir/$file_name");
 unshift(@files_to_remove,"$eventdir_base/$arch/$evname");
 
 for (BSUtil::unify(sort {$b cmp $a} @files_to_remove)) {
-  ( -d $_ ) ? rmdir $_ : unlink $_;
-  warn "$_: $!" if $!;
+  ( -d $_ ) ? rmdir $_ : unlink $_ or warn "$_: $!" if $!;
 }
 
 exit 0;
