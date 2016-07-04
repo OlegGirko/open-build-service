@@ -316,49 +316,21 @@ module Webui
     end
 
     # ============================================================================
-    # Checks if a flash message is displayed on screen
-    #
-    def flash_message_appeared?
-      flash_message_type != nil
-    end
-
-    # ============================================================================
     # Returns the text of the flash message currenlty on screen
-    # @note Doesn't fail if no message is on screen. Returns empty string instead.
+    # @note Raises error if no message or multiple messages are on screen.
     # @return [String]
     #
     def flash_message
-      results = all(:css, 'div#flash-messages p')
-      if results.empty?
-        return 'none'
-      end
-      if results.count > 1
-        texts = results.map { |r| r.text }
-        raise "One flash expected, but we had #{texts.inspect}"
-      end
-      results.first.text
-    end
-
-    # ============================================================================
-    # Returns the text of the flash messages currenlty on screen
-    # @note Doesn't fail if no message is on screen. Returns empty list instead.
-    # @return [array]
-    #
-    def flash_messages
-      results = all(:css, 'div#flash-messages p')
-      ret = []
-      results.each { |r| ret << r.text }
-      return ret
+      find(:css, 'div#flash-messages p').text
     end
 
     # ============================================================================
     # Returns the type of the flash message currenlty on screen
-    # @note Does not fail if no message is on screen! Returns nil instead!
+    # @note Raises error if no message or multiple messages are on screen.
     # @return [:info, :alert]
     #
     def flash_message_type
-      result = first(:css, 'div#flash-messages span')
-      return nil unless result
+      result = find(:css, 'div#flash-messages span')
       return :info if result['class'].include? 'info'
       return :alert if result['class'].include? 'alert'
     end
