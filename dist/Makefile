@@ -36,6 +36,9 @@ install_initscripts: system_dirs
 	    -e 's|wwwrun:www|$(APACHE_USER):$(APACHE_GROUP)|g' \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
+	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
+	    -e 's|5152|$(OBS_SERVICESERVER_PORT)|' \
 	    $(INIT_SCRIPTS:%=$(DESTDIR)$(INITDDIR)/%)
 
 install_project_update: system_dirs
@@ -55,11 +58,19 @@ install_fillups: system_dirs
 	    $(DESTDIR)$(OBS_FILLUP_DIR)/$(OBS_FILLUP_FILE)
 	sed -i \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
+	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
+	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
+	    -e 's|5152|$(OBS_SERVICESERVER_PORT)|' \
 	    $(DESTDIR)$(OBS_FILLUP_DIR)/$(OBS_FILLUP_FILE)
 
 install_slp: system_dirs
 	$(INSTALL) -m 644 obs.source_server.reg $(DESTDIR)/etc/slp.reg.d/
 	$(INSTALL) -m 644 obs.repo_server.reg $(DESTDIR)/etc/slp.reg.d/
+	sed -i \
+	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
+	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
+	    $(DESTDIR)/etc/slp.reg.d/obs.source_server.reg \
+	    $(DESTDIR)/etc/slp.reg.d/obs.repo_server.reg
 
 install_obs_bin: system_dirs
 	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(BINDIR)/$(script)) )
