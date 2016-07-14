@@ -256,7 +256,7 @@ class Webui::PackageControllerTest < Webui::IntegrationTest
     # test reload and wait for the build to finish
     starttime=Time.now
     while Time.now - starttime < 10
-      first('.icons-reload').click
+      find('.icons-reload', match: :first).click
       if page.has_selector? '.buildstatus'
         break if first('.buildstatus').text == 'succeeded'
       end
@@ -544,7 +544,7 @@ class Webui::PackageControllerTest < Webui::IntegrationTest
     use_js
     login_king to: package_live_build_log_path(package: 'pack2.linked', project: 'BaseDistro2.0', repository: 'BaseDistro2_repo', arch: 'i586')
 
-    page.all(:link, 'Trigger Rebuild')[0].click
+    find_link('Trigger Rebuild', match: :first).click
     find('#flash-messages').must_have_text('Triggered rebuild for BaseDistro2.0/pack2.linked successfully.')
   end
 
