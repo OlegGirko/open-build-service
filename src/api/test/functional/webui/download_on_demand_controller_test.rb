@@ -145,7 +145,7 @@ class Webui::DownloadOnDemandControllerTest < Webui::IntegrationTest
     find(:id, 'flash-messages').must_have_text('Config successfully saved!')
 
     click_link("Repositories")
-    first(:xpath, "//a[text()='Delete']").click
+    find(:xpath, "//a[text()='Delete']", match: :first).click
 
     page.wont_have_text 'Download on demand repositories'
     page.wont_have_link 'http://mola.org2'
