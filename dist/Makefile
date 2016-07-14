@@ -99,13 +99,13 @@ install_tests_appliance:
 	  xargs sed -i -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g'
 
 test_unit:
-	prove -v t/*.t
+	SBINDIR=$(SBINDIR) prove -v t/*.t
 
 test_system:
-	prove -v t/*.ts
+	SBINDIR=$(SBINDIR) prove -v t/*.ts
 
 test_appliance:
-	prove -v t/*.ta
+	SBINDIR=$(SBINDIR) prove -v t/*.ta
 
 scripts_linters:
 	./run_shellcheck.sh
