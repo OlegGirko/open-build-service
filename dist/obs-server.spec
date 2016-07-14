@@ -80,6 +80,10 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define secret_key_file %{__obs_api_prefix}/config/secret.key
 %define obs_backend_data_dir /srv/obs
 %define obs_backend_dir /usr/lib/obs/server
+%define obs_srcserver_port 5352
+%define obs_reposerver_port 5252
+%define obs_serviceserver_port 5152
+%define obs_clouduploadserver_port 5452
 
 %if ! %{defined _restart_on_update_reload}
 %define _restart_on_update_reload() (\
@@ -473,6 +477,10 @@ OBS_BACKEND_DATA_DIR=%{obs_backend_data_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
 OBS_API_PREFIX=%{__obs_api_prefix}
 OBS_APIDOCS_PREFIX=%{__obs_document_root}/docs
+OBS_SRCSERVER_PORT=%{obs_srcserver_port}
+OBS_REPOSERVER_PORT=%{obs_reposerver_port}
+OBS_SERVICESERVER_PORT=%{obs_serviceserver_port}
+OBS_CLOUDUPLOADSERVER_PORT=%{obs_clouduploadserver_port}
 
 # TODO: find fix for RH in spec/Makefile
 # This here is preparation for multi distro support
@@ -568,12 +576,20 @@ popd
 install -m 0644 dist/sysconfig.obs-server $RPM_BUILD_ROOT/etc/sysconfig/obs-server
 sed -i \
     -e 's|/srv/obs|%{obs_backend_data_dir}|g' \
+    -e 's|5352|%{obs_srcserver_port}|' \
+    -e 's|5252|%{obs_reposerver_port}|' \
+    -e 's|5152|%{obs_serviceserver_port}|' \
+    -e 's|5452|%{obs_clouduploadserver_port}|' \
     $RPM_BUILD_ROOT/etc/sysconfig/obs-server
 %else
 mkdir -p $RPM_BUILD_ROOT/%{_fillupdir}
 install -m 0644 dist/sysconfig.obs-server $RPM_BUILD_ROOT/%{_fillupdir}
 sed -i \
     -e 's|/srv/obs|%{obs_backend_data_dir}|g' \
+    -e 's|5352|%{obs_srcserver_port}|' \
+    -e 's|5252|%{obs_reposerver_port}|' \
+    -e 's|5152|%{obs_serviceserver_port}|' \
+    -e 's|5452|%{obs_clouduploadserver_port}|' \
     $RPM_BUILD_ROOT/%{_fillupdir}/sysconfig.obs-server
 %endif
 
