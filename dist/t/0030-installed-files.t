@@ -9,8 +9,8 @@ export BASH_TAP_ROOT=$(dirname $0)
 plan tests 5
 for i in \
     $DESTDIR/etc/logrotate.d/obs-server\
-    $DESTDIR/usr/sbin/obs_admin\
-    $DESTDIR/usr/sbin/obs_serverstatus
+    $DESTDIR$SBINDIR/obs_admin\
+    $DESTDIR$SBINDIR/obs_serverstatus
 do
   [[ -e $i ]]
   is $? 0 "Checking $i"
@@ -18,8 +18,8 @@ do
 done
 
 for i in \
-    $DESTDIR/usr/sbin/rcobssrcserver\
-    $DESTDIR/usr/sbin/rcobsdodup
+    $DESTDIR$SBINDIR/rcobssrcserver\
+    $DESTDIR$SBINDIR/rcobsdodup
 do
   [[ -L $i ]]
   is $? 0 "Checking $i"
