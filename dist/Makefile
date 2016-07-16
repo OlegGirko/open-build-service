@@ -47,6 +47,7 @@ install_logrotate: system_dirs
 	sed -i \
 	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
@@ -54,6 +55,7 @@ install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server \
 	    $(DESTDIR)$(FILLUPDIR)/$(OBS_FILLUP_FILE)
 	sed -i \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
 	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
