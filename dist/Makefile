@@ -55,11 +55,22 @@ install_logrotate: system_dirs
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
+ifneq ($(OBS_BACKEND_LOG_DIR),$(OBS_BACKEND_DATA_DIR)/log)
+	sed -i \
+	    -e 's|$(OBS_BACKEND_DATA_DIR)/log|$(OBS_BACKEND_LOG_DIR)|g' \
+	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
+endif
+ifneq ($(OBS_BACKEND_SERVICE_LOG_DIR),$(OBS_BACKEND_DATA_DIR)/service/log)
+	sed -i \
+	    -e 's|$(OBS_BACKEND_DATA_DIR)/service/log|$(OBS_BACKEND_SERVICE_LOG_DIR)|g' \
+	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
+endif
 
 install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server \
 	    $(DESTDIR)$(FILLUPDIR)/$(OBS_FILLUP_FILE)
 	sed -i \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
 	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
