@@ -53,6 +53,8 @@ install_logrotate: system_dirs
 	sed -i \
 	    -e 's| wwwrun www| $(APACHE_USER) $(APACHE_GROUP)|g' \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_SERVICE_LOG_DIR)|g' \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(LOGROTATE_CONFIGS:%=$(DESTDIR)/etc/logrotate.d/%)
 
@@ -60,6 +62,8 @@ install_fillups: system_dirs
 	$(INSTALL) -m 0644 sysconfig.obs-server \
 	    $(DESTDIR)$(FILLUPDIR)/$(OBS_FILLUP_FILE)
 	sed -i \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_SERVICE_LOG_DIR)|g' \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
 	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
@@ -79,6 +83,8 @@ install_obs_bin: system_dirs
 	$(foreach script,$(OBS_BIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(BINDIR)/$(script)) )
 	$(foreach script,$(OBS_SBIN_SCRIPTS),$(shell $(INSTALL) -m 755 $(script) $(DESTDIR)$(SBINDIR)/$(script)) )
 	sed -i \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_SERVICE_LOG_DIR)|g' \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    -e 's|5352|$(OBS_SRCSERVER_PORT)|' \
 	    -e 's|5252|$(OBS_REPOSERVER_PORT)|' \
@@ -90,6 +96,8 @@ install_crontabs:
 	$(INSTALL) -m 644 cleanup_scm_cache.cron $(DESTDIR)/etc/cron.d/cleanup_scm_cache
 	sed -i \
 	    -e 's|/srv/www/obs/api|$(OBS_API_PREFIX)|g' \
+	    -e 's|/srv/obs/service/log|$(OBS_BACKEND_SERVICE_LOG_DIR)|g' \
+	    -e 's|/srv/obs/log|$(OBS_BACKEND_LOG_DIR)|g' \
 	    -e 's|/srv/obs|$(OBS_BACKEND_DATA_DIR)|g' \
 	    $(DESTDIR)/etc/cron.d/cleanup_scm_cache \
 
