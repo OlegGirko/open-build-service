@@ -84,6 +84,8 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define obs_reposerver_port 5252
 %define obs_serviceserver_port 5152
 %define obs_clouduploadserver_port 5452
+%define obs_backend_log_dir %{obs_backend_data_dir}/log
+%define obs_backend_service_log_dir %{obs_backend_data_dir}/service/log
 
 %if ! %{defined _restart_on_update_reload}
 %define _restart_on_update_reload() (\
@@ -472,6 +474,8 @@ cat <<EOF > Makefile.local
 INSTALL=/usr/bin/install
 OBS_BACKEND_PREFIX=%{obs_backend_dir}
 OBS_BACKEND_DATA_DIR=%{obs_backend_data_dir}
+OBS_BACKEND_LOG_DIR=%{obs_backend_log_dir}
+OBS_BACKEND_SERVICE_LOG_DIR=%{obs_backend_service_log_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
 OBS_API_PREFIX=%{__obs_api_prefix}
 OBS_APIDOCS_PREFIX=%{__obs_document_root}/docs
@@ -571,6 +575,8 @@ popd
 [-d $RPM_BUILD_ROOT/etc/sysconfig] || mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 install -m 0644 dist/sysconfig.obs-server $RPM_BUILD_ROOT/etc/sysconfig/obs-server
 sed -i \
+    -e 's|/srv/obs/service/log|%{obs_backend_service_log_dir}|g' \
+    -e 's|/srv/obs/log|%{obs_backend_log_dir}|g' \
     -e 's|/srv/obs|%{obs_backend_data_dir}|g' \
     -e 's|5352|%{obs_srcserver_port}|' \
     -e 's|5252|%{obs_reposerver_port}|' \
@@ -671,11 +677,11 @@ if [ -f /etc/sysconfig/obs-server ] ; then
     . /etc/sysconfig/obs-server
 fi
 for i in deltastore dispatcher dodup obsgetbinariesproxy publisher rep_server servicedispatch signer src_server warden ; do
-    LOG=${OBS_LOG_DIR:=%{obs_backend_data_dir}/log}/$i.log
+    LOG=${OBS_LOG_DIR:=%{obs_backend_log_dir}}/$i.log
     test -f $LOG && chown obsrun:obsrun $LOG
 done
 for i in src_service ; do
-    LOG=${OBS_LOG_DIR:=%{obs_backend_data_dir}/log}/$i.log
+    LOG=${OBS_LOG_DIR:=%{obs_backend_log_dir}}/$i.log
     test -f $LOG && chown obsservicerun:obsrun $LOG
 done
 
@@ -962,7 +968,6 @@ fi
 %attr(0700, root,   root)   %dir %{obs_backend_data_dir}/gnupg
 %attr(0755, obsrun, obsrun) %dir %{obs_backend_data_dir}/info
 %attr(0755, obsrun, obsrun) %dir %{obs_backend_data_dir}/jobs
-%attr(0775, obsrun, obsrun) %dir %{obs_backend_data_dir}/log
 %attr(0755, obsrun, obsrun) %dir %{obs_backend_data_dir}/projects
 %attr(0755, obsrun, obsrun) %dir %{obs_backend_data_dir}/remotecache
 %attr(0755, obsrun, obsrun) %dir %{obs_backend_data_dir}/repos
@@ -971,8 +976,17 @@ fi
 %attr(0775, obsrun, obsrun) %dir %{obs_backend_data_dir}/trees
 %attr(0775, obsrun, obsrun) %dir %{obs_backend_data_dir}/upload
 %attr(0775, obsrun, obsrun) %dir %{obs_backend_data_dir}/workers
+%attr(0775, obsrun, obsrun) %dir %{obs_backend_log_dir}
+%if "%{obs_backend_log_dir}" != "%{obs_backend_data_dir}/log"
+# Compatibility symlink to log dir
+%{obs_backend_data_dir}/log
+%endif
 %attr(0755, obsservicerun, obsrun) %dir %{obs_backend_data_dir}/service
-%attr(0755, obsservicerun, obsrun) %dir %{obs_backend_data_dir}/service/log
+%attr(0755, obsservicerun, obsrun) %dir %{obs_backend_service_log_dir}
+%if "%{obs_backend_service_log_dir}" != "%{obs_backend_data_dir}/service/log"
+# Compatibility symlink to service log dir
+%{obs_backend_data_dir}/service/log
+%endif
 
 
 # formerly obs-source_service
