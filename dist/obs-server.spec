@@ -45,6 +45,7 @@ Requires:       rubygem-rails\
 %define __obs_rake_bin /usr/bin/rake
 %define __obs_document_root %{apache_datadir}/obs
 %define __obs_api_prefix %{__obs_document_root}/api
+%define __obs_api_log_dir %{__obs_api_prefix}/log
 %define __obs_build_package_name obs-build
 
 %else
@@ -73,6 +74,7 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define __obs_rake_bin /usr/bin/rake.ruby3.4
 %define __obs_document_root %{apache_datadir}/obs
 %define __obs_api_prefix %{__obs_document_root}/api
+%define __obs_api_log_dir %{__obs_api_prefix}/log
 %define __obs_build_package_name build
 
 %endif
@@ -480,6 +482,7 @@ OBS_BACKEND_LOG_DIR=%{obs_backend_log_dir}
 OBS_BACKEND_SERVICE_LOG_DIR=%{obs_backend_service_log_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
 OBS_API_PREFIX=%{__obs_api_prefix}
+OBS_API_LOG_DIR=%{__obs_api_log_dir}
 OBS_APIDOCS_PREFIX=%{__obs_document_root}/docs
 OBS_SRCSERVER_PORT=%{obs_srcserver_port}
 OBS_REPOSERVER_PORT=%{obs_reposerver_port}
@@ -1126,7 +1129,12 @@ usermod -a -G docker obsservicerun
 %config %{__obs_api_prefix}/config/environments/test.rb
 %config %{__obs_api_prefix}/config/environments/stage.rb
 
-%dir %attr(-,%{apache_user},%{apache_group}) %{__obs_api_prefix}/log
+%dir %attr(-,%{apache_user},%{apache_group}) %{__obs_api_log_dir}
+%if "%{__obs_api_log_dir}" != "%{__obs_api_prefix}/log"
+# Compatibility symlink to log dir
+%{__obs_api_prefix}/log
+%endif
+
 %dir %attr(-,%{apache_user},%{apache_group}) %{__obs_api_prefix}/storage
 %attr(-,%{apache_user},%{apache_group}) %{__obs_api_prefix}/tmp
 
@@ -1136,12 +1144,12 @@ usermod -a -G docker obsservicerun
 %config(noreplace) %{apache_vhostdir}/obs.conf
 
 %defattr(0644,%{apache_user},%{apache_group})
-%ghost %{__obs_api_prefix}/log/access.log
-%ghost %{__obs_api_prefix}/log/backend_access.log
-%ghost %{__obs_api_prefix}/log/delayed_job.log
-%ghost %{__obs_api_prefix}/log/error.log
-%ghost %{__obs_api_prefix}/log/lastevents.access.log
-%ghost %{__obs_api_prefix}/log/production.log
+%ghost %{__obs_api_log_dir}/access.log
+%ghost %{__obs_api_log_dir}/backend_access.log
+%ghost %{__obs_api_log_dir}/delayed_job.log
+%ghost %{__obs_api_log_dir}/error.log
+%ghost %{__obs_api_log_dir}/lastevents.access.log
+%ghost %{__obs_api_log_dir}/production.log
 %ghost %attr(0640,root,%{apache_group}) %secret_key_file
 
 %files -n obs-common
