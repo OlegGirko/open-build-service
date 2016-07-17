@@ -7,6 +7,14 @@ OBS_API_BUNDLER_OPTS=BUNDLE_WITHOUT=test:assets:development BUNDLE_FROZEN=1
 all:
 
 install: prepare_dirs prepare_rake docs config log_files build
+ifneq ($(OBS_API_LOG_DIR),$(OBS_API_PREFIX)/log)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_API_LOG_DIR)
+	test -n "`ls -A $(DESTDIR)$(OBS_API_PREFIX)/log`" && \
+	    mv $(DESTDIR)$(OBS_API_PREFIX)/log/* \
+	       $(DESTDIR)$(OBS_API_LOG_DIR) || :
+	rmdir $(DESTDIR)$(OBS_API_PREFIX)/log
+	ln -s $(OBS_API_LOG_DIR) $(DESTDIR)$(OBS_API_PREFIX)/log
+endif
 
 prepare_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_API_PREFIX)
