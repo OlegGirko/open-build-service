@@ -466,6 +466,12 @@ case "$1" in
 		WORKER_NR="--vm-worker-nr $I"
 		OBS_WORKER_OPT="$OBS_WORKER_OPT1 $WORKER $WORKER_NR $VMDISK_FILESYSTEM $VMDISK_MOUNT_OPTIONS $VMDISK_CLEAN"
             else
+                if [ -n "$OBS_VM_USE_TMPFS" ]; then
+                    TMPFS="--tmpfs"
+                    if [ -n "$OBS_VM_DISK_AUTOSETUP_ROOT_FILESIZE" ]; then
+                        TMPFS="$TMPFS --vmdisk-rootsize ${OBS_VM_DISK_AUTOSETUP_ROOT_FILESIZE}"
+                    fi
+                fi
                 mkdir -p $R
                 DEVICE=
                 SWAP=
