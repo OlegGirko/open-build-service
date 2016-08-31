@@ -477,6 +477,12 @@ case "$1" in
                     MEMORY="--vm-memory $OBS_INSTANCE_MEMORY"
                 fi
             else
+                if [ -n "$OBS_VM_USE_TMPFS" ]; then
+                    TMPFS="--tmpfs"
+                    if [ -n "$OBS_VM_DISK_AUTOSETUP_ROOT_FILESIZE" ]; then
+                        TMPFS="$TMPFS --vmdisk-rootsize ${OBS_VM_DISK_AUTOSETUP_ROOT_FILESIZE}"
+                    fi
+                fi
                 DEVICE=
                 SWAP=
                 MEMORY=
