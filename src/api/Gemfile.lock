@@ -49,6 +49,9 @@ GEM
       activerecord (>= 3.0.0)
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
+    airbrake (6.1.2)
+      airbrake-ruby (~> 2.2, >= 2.2.5)
+    airbrake-ruby (2.2.6)
     ansi (1.5.0)
     arel (8.0.0)
     ast (2.3.0)
@@ -125,9 +128,11 @@ GEM
     haml (4.0.7)
       tilt
     hashdiff (0.3.0)
-    hoptoad_notifier (2.4.11)
-      activesupport
-      builder
+    html2haml (2.2.0)
+      erubis (~> 2.7.0)
+      haml (>= 4.0, < 6)
+      nokogiri (>= 1.6.0)
+      ruby_parser (~> 3.5)
     i18n (0.8.0)
     innertube (1.1.0)
     joiner (0.3.4)
@@ -362,6 +367,7 @@ DEPENDENCIES
   activemodel-serializers-xml
   acts_as_list
   acts_as_tree
+  airbrake
   bundler
   capybara_minitest_spec
   chunky_png
