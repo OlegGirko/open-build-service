@@ -4,6 +4,7 @@ ENV['RAILS_ENV'] = 'test'
 
 require 'simplecov'
 require 'coveralls'
+require 'builder'
 require "minitest/reporters"
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
