@@ -100,7 +100,7 @@ class CodeQualityTest < ActiveSupport::TestCase
       'Webui::PackageController#submit_request'                                 => 110.76,
       'Webui::PackageController#dependency'                                     => 83.57,
       'Webui::PackageController#update_build_log'                               => 84.81,
-      'Webui::PatchinfoController#save'                                         => 256.25,
+      'Webui::PatchinfoController#save'                                         => 271.56,
       'Webui::ProjectController#check_devel_package_status'                     => 81.95,
       'Webui::RequestController#show'                                           => 91.96,
       'Webui::SearchController#set_parameters'                                  => 92.27,
