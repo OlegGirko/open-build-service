@@ -1,4 +1,4 @@
-class InitialDatabase < ActiveRecord::Migration
+class InitialDatabase < ActiveRecord::Migration[4.2]
   def self.up
     puts "Please don't use db:migrate to create an initial database."
     puts "Please use \"rake db:setup\" instead!"
