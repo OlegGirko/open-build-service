@@ -256,7 +256,7 @@ RSpec.describe Webui::WebuiHelper do
       @codemirror_editor_setup = 0
     end
 
-    it { expect(next_codemirror_uid).to be_instance_of(Integer) }
+    it { expect(next_codemirror_uid).to be_kind_of(Integer) }
 
     context "if next_codemirror_uid get's called the first time" do
       it { expect(next_codemirror_uid).to eq(1) }
