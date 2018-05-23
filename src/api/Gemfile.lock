@@ -482,7 +482,7 @@ DEPENDENCIES
   rdoc
   redcarpet
   responders (~> 2.0)
-  rspec-rails (~> 3.5.0)
+  rspec-rails (~> 3.5)
   rubocop
   rubocop-rspec
   ruby-ldap
