@@ -89,7 +89,7 @@ class BsRequest < ApplicationRecord
   validates :comment, length: { maximum: 65_535 }
   validates :description, length: { maximum: 65_535 }
 
-  after_update :send_state_change
+  before_update :send_state_change
   after_commit :update_cache
 
   def self.delayed_auto_accept
