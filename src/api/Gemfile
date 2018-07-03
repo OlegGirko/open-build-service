@@ -133,12 +133,6 @@ group :test do
   gem 'json'
 end
 
-# Gems used only during development not required in production environments by default.
-group :development do
-  # as alternative to the standard IRB shell
-  gem 'unicorn-rails' # webrick won't work
-end
-
 group :development, :test do
   # as testing framework
   gem 'rspec-rails', '~> 3.5'
@@ -164,6 +158,8 @@ group :development, :test do
   gem 'single_test'
   # to find n+1 queries
   gem 'bullet'
+  # Use Puma as the app server (rails 5 default)
+  gem 'puma', '~> 3.11'
 end
 
 # Gems used only for assets and not required in production environments by default.
