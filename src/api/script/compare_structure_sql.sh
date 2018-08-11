@@ -15,6 +15,9 @@ for file in "$git_file" "$migrate_file"; do
   sed -i -e '/^(.21.),$/,/^(.9.);/d' "${file}.normalized" || exit 1
   # we have a different last migration, therefore ; => ,
   sed -i -e 's/\(^(.20.............)\);$/\1,/' "${file}.normalized" || exit 1
+  # changes for differences in MySQL / MariaDB versions behaviour
+  sed -i -e "s/ DEFAULT '\([0-9][0-9]*\)',\$/ DEFAULT \1,/" "${file}.normalized" || exit 1
+  sed -i -e 's/ DEFAULT NULL,$/,/' "${file}.normalized" || exit 1
 done
 
 if ! diff "${git_file}.normalized" "${migrate_file}.normalized"; then
