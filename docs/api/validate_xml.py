@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 #
 # Copyright (c) 2010, Sascha Peilicke <saschpe@suse.de>, Novell Inc.
 #
