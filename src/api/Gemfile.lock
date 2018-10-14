@@ -487,7 +487,7 @@ DEPENDENCIES
   rubocop
   rubocop-rspec
   ruby-ldap
-  sanitize
+  sanitize (>=4.1.0)
   sass-rails (~> 5.0.1)
   shoulda-matchers (~> 3.1)
   simplecov
@@ -499,9 +499,9 @@ DEPENDENCIES
   timecop
   uglifier (>= 1.2.2)
   unicorn-rails
-  vcr
+  vcr (>= 4.0.0)
   voight_kampff
-  webmock (>= 2.3.0)
+  webmock (>= 3.3.0)
   xmlhash (>= 1.3.6)
   xmlrpc
   yajl-ruby
