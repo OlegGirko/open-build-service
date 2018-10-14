@@ -70,6 +70,8 @@ gem 'bunny'
 gem 'data_migrate', '= 3.2.2'
 # for URI encoding
 gem 'addressable'
+# for mime lookup
+gem 'mini_mime', '>= 1.0.0'
 
 group :development, :production do
   # to have the delayed job daemon
