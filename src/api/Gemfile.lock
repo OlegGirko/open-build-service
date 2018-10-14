@@ -528,6 +528,7 @@ DEPENDENCIES
   kaminari
   launchy
   lograge
+  mini_mime (>= 1.0.0)
   minitest
   minitest-ci
   minitest-fail-fast
