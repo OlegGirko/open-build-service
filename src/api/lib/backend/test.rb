@@ -6,14 +6,20 @@ module Backend
     # Starts the test backend
     def self.start(options = {})
       return unless Rails.env.test?
-      return if @backend
+      if @backend
+        raise 'Backend died' if @backend == :backend_died
+        return
+      end
       return if ENV['BACKEND_STARTED']
       print 'Starting test backend...'
       @backend = IO.popen("#{Rails.root}/script/start_test_backend")
       Rails.logger.debug "Test backend started with pid: #{@backend.pid}"
       loop do
         line = @backend.gets
-        raise 'Backend died' unless line
+        unless line
+          @backend = :backend_died
+          raise 'Backend died'
+        end
         break if line =~ /DONE NOW/
         Rails.logger.debug line.strip
       end
@@ -21,9 +27,23 @@ module Backend
       CONFIG['global_write_through'] = true
       WebMock.disable_net_connect!(allow_localhost: true)
       ENV['BACKEND_STARTED'] = '1'
+      backend_done = false
+      backend_logger = Thread.new do
+        loop do
+          line = @backend.gets
+          unless line
+            break if backend_done
+            @backend = :backend_died
+            raise 'Backend died'
+          end
+        end
+      end
+      backend_logger.abort_on_exception = true
       at_exit do
+        backend_done = true
         puts 'Killing test backend'
         Process.kill 'INT', @backend.pid
+        backend_logger.join
         @backend = nil
       end
 
