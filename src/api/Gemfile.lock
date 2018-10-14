@@ -562,7 +562,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   ruby-ldap
-  sanitize
+  sanitize (>=4.1.0)
   sassc-rails
   selenium-webdriver
   shoulda-matchers (~> 4.0)
@@ -574,9 +574,9 @@ DEPENDENCIES
   tilt (>= 1.4.1)
   timecop
   uglifier (>= 1.2.2)
-  vcr
+  vcr (>= 4.0.0)
   voight_kampff
-  webmock (>= 2.3.0)
+  webmock (>= 3.3.0)
   xmlhash (>= 1.3.6)
   xmlrpc
   yajl-ruby

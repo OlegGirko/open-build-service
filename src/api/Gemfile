@@ -36,7 +36,7 @@ gem 'xmlhash', '>=1.3.6'
 # to escape HTML (FIXME: do we still use this?)
 gem 'escape_utils'
 # to sanitize HTML/CSS
-gem 'sanitize'
+gem 'sanitize', '>=4.1.0'
 # as authorization system
 gem 'pundit'
 # for password hashing
@@ -130,7 +130,7 @@ group :test do
   # to freeze time
   gem 'timecop'
   # to fake backend replies
-  gem 'webmock', '>= 2.3.0'
+  gem 'webmock', '>= 3.3.0'
   # for mocking and stubbing
   gem 'mocha', '> 0.13.0', require: false
   # for testing common Rails functionality with simple one-liners
@@ -156,7 +156,7 @@ group :development, :test do
   # for fixtures
   gem 'factory_bot_rails'
   # for mocking the backend
-  gem 'vcr'
+  gem 'vcr', '>= 4.0.0'
   # as alternative to the standard IRB shell
   gem 'pry', '>= 0.9.12'
   # add step-by-step debugging and stack navigation capabilities to pry
