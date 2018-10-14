@@ -460,6 +460,7 @@ DEPENDENCIES
   json
   kaminari
   launchy
+  mini_mime (>= 1.0.0)
   minitest
   minitest-fail-fast
   minitest-reporters
