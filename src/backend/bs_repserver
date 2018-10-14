@@ -4011,7 +4011,7 @@ sub checkconstraints {
     mkdir_p($uploaddir);
     my $uploaded = BSServer::read_file("$uploaddir/$$");
     die("upload failed\n") unless $uploaded;
-    $constraints = readxml("$uploaddir/$$", $BSXML::constraints);
+    $constraints = readxml("$uploaddir/$$", $BSXML::constraints) if $uploaded->{'size'} > 0;
     unlink("$uploaddir/$$");
   }
   my $pconf = BSRPC::rpc("$BSConfig::srcserver/getconfig", undef, "project=$projid", "repository=$repoid");
