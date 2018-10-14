@@ -84,6 +84,8 @@ gem 'rails-timeago', '~> 2.0'
 gem 'deep_cloneable', '~> 2.4.0'
 # Server-side datatables
 gem 'ajax-datatables-rails'
+# for mime lookup
+gem 'mini_mime', '>= 1.0.0'
 
 group :development, :production do
   # to have the delayed job daemon
