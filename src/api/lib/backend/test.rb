@@ -8,6 +8,7 @@ module Backend
       return unless Rails.env.test?
       if @backend
         raise 'Backend died' if @backend == :backend_died
+        wait_for_scheduler if options[:wait_for_scheduler] && @backend.is_a?(IO)
         return
       end
       return if ENV['BACKEND_STARTED']
@@ -49,6 +50,10 @@ module Backend
 
       # make sure it's actually tried to start
       return unless options[:wait_for_scheduler]
+      wait_for_scheduler
+    end
+
+    def self.wait_for_scheduler
       Rails.logger.debug 'Wait for scheduler thread to finish start'
       counter = 0
       marker = Rails.root.join('tmp', 'scheduler.done')
