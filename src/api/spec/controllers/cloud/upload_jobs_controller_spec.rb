@@ -70,7 +70,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
         it 'returns an xml response with all cloud upload jobs listed' do
           expect(Xmlhash.parse(response.body)).to eq(Xmlhash.parse(xml_response_list))
         end
-        it { expect(response).to be_success }
+        it { expect(response).to have_http_status(:success) }
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
         end
       end
 
-      it { expect(response).to be_not_found }
+      it { expect(response).to have_http_status(:success) }
     end
   end
 
@@ -111,7 +111,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
         it 'returns an xml response with all cloud upload jobs listed' do
           expect(Xmlhash.parse(response.body)).to eq(Xmlhash.parse(xml_response_list))
         end
-        it { expect(response).to be_success }
+        it { expect(response).to have_http_status(:success) }
       end
     end
 
@@ -122,7 +122,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
         end
       end
 
-      it { expect(response).to be_not_found }
+      it { expect(response).to have_http_status(:not_found) }
     end
   end
 
@@ -172,7 +172,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
 
       it { expect(Cloud::User::UploadJob.last.job_id).to eq(6) }
       it { expect(Cloud::User::UploadJob.last.user).to eq(user_with_ec2_configuration) }
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(Xmlhash.parse(response.body)).to eq(Xmlhash.parse(xml_response_list)) }
     end
   end
@@ -189,7 +189,7 @@ RSpec.describe Cloud::UploadJobsController, vcr: true do
         end
       end
 
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
     end
 
     context 'of a not existing upload job' do

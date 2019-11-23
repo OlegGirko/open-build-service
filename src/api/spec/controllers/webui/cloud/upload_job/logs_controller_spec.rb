@@ -39,7 +39,7 @@ RSpec.describe Webui::Cloud::UploadJob::LogsController, type: :controller, vcr: 
             end
           end
 
-          it { expect(response).to be_success }
+          it { expect(response).to have_http_status(:success) }
           it { expect(response.body).to eq(log) }
         end
 
@@ -64,7 +64,7 @@ RSpec.describe Webui::Cloud::UploadJob::LogsController, type: :controller, vcr: 
         end
       end
 
-      it { expect(response).to be_not_found }
+      it { expect(response).to have_http_status(:not_found) }
     end
   end
 end
