@@ -37,7 +37,8 @@ RSpec.describe Webui::Cloud::Ec2::UploadJobsController, type: :controller, vcr: 
         end
       end
 
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
+
       it {
         expect(assigns(:upload_job)).
           to have_attributes(project: 'EC2Images', package: 'MyEC2Image', repository: 'standard', arch: 'x86_64', filename: 'appliance.raw.xz')
