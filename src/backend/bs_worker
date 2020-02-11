@@ -208,7 +208,7 @@ sub kill_job {
     push @args, '--vm-worker-nr', $vm_worker_instance if $vm_worker_instance;
   } else {
     push @args, '--root', $buildroot;
-    push @args, '--vm-type', $vm if $vm eq 'lxc' || $vm eq 'docker';
+    push @args, '--vm-type', $vm if $vm ne '' && $vm ne 'chroot';
   }
   if (system("$statedir/build/build", @args, "--kill")) {
     return 0;

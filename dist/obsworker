@@ -141,18 +141,18 @@ ARCH=""
 EMULATOR=""
 if [ -n "$OBS_VM_TYPE" -a "$OBS_VM_TYPE" != "auto" ] ; then
     if [ "${OBS_VM_TYPE#emulator:}" != "$OBS_VM_TYPE" ] ; then
-        vmopt="--emulator"
+        vmopt="--vm-type emulator"
         options=(${OBS_VM_TYPE//:/ })
         ARCH="--arch ${options[1]}"
         [ -n "${options[2]}" ] && EMULATOR="--emulator-script ${options[2]}"
     elif [ "$OBS_VM_TYPE" != "none" ] ; then
-        vmopt="--$OBS_VM_TYPE"
+        vmopt="--vm-type $OBS_VM_TYPE"
     fi
 elif [ -e /dev/kvm -a -x /usr/bin/qemu-kvm ] ; then
-    vmopt=--kvm
+    vmopt="--vm-type kvm"
     OBS_VM_TYPE="kvm"
 elif [ -e /sys/hypervisor/type ] && [ -x /usr/sbin/xl -o -x /usr/sbin/xm ] && grep -q xen /sys/hypervisor/type; then
-    vmopt=--xen
+    vmopt="--vm-type xen"
     OBS_VM_TYPE="xen"
 fi
 
@@ -351,7 +351,7 @@ case "$1" in
             # start one build backend per CPU
             NUM=`ls -d /sys/devices/system/cpu/cpu[0-9]* | wc -l`
         fi
-	if [ "--zvm" == "$vmopt" ]; then
+	if [ "zvm" == "$OBS_VM_TYPE" ]; then
 	    check_vmcp || rc_status -v
 	    create_initrd $OBS_VM_KERNEL $OBS_VM_INITRD || rc_status -v
             if [ -n "$OBS_WORKER_INSTANCE_NAMES" ]; then
@@ -367,14 +367,15 @@ case "$1" in
 	# print some config data
         echo "Run $NUM obsworker using $OBS_WORKER_DIRECTORY"
         echo -n "Type of obsworker is "
-	if [ "--kvm" == "$vmopt" ]; then echo "KVM virtual machine"
-	elif [ "--xen" == "$vmopt" ]; then echo "XEN virtual machine"
-	elif [ "--zvm" == "$vmopt" ]; then echo "z/VM virtual machine"
-	elif [ "--pvm" == "$vmopt" ]; then echo "PowerVM LPAR"
-	elif [ "--emulator" == "$vmopt" ]; then echo "System emulated virtual machine"
-	elif [ "--lxc" == "$vmopt" ]; then echo "LXC container"
+	if [ "kvm" == "$OBS_VM_TYPE" ]; then echo "KVM virtual machine"
+	elif [ "xen" == "$OBS_VM_TYPE" ]; then echo "XEN virtual machine"
+	elif [ "zvm" == "$OBS_VM_TYPE" ]; then echo "z/VM virtual machine"
+	elif [ "pvm" == "$OBS_VM_TYPE" ]; then echo "PowerVM LPAR"
+	elif [ "${OBS_VM_TYPE#emulator:}" != "$OBS_VM_TYPE" ]; then echo "System emulated virtual machine"
+	elif [ "lxc" == "$OBS_VM_TYPE" ]; then echo "LXC container"
 	elif [ "openstack" == "$OBS_VM_TYPE" ]; then echo "OpenStack virtual machine"
-	else  echo "chroot"
+	elif [ "auto" == "$OBS_VM_TYPE" -o "none" == "$OBS_VM_TYPE" -o -z "$OBS_VM_TY{E" ]; then echo "chroot"
+	else  echo "$OBS_VM_TYPE"
 	fi
 
         # find SLP announced OBS servers
