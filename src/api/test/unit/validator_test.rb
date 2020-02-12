@@ -40,10 +40,9 @@ class ValidatorTest < ActiveSupport::TestCase
     assert_match(/Extra content at the end of the document/, exception.message)
 
     request.env['RAW_POST_DATA'] = '<link test="invalid">'
-    exception = assert_raise Suse::ValidationError do
+    assert_raise Suse::ValidationError do
       Suse::Validator.validate 'link', request.raw_post.to_s
     end
-    assert_match(/Premature end of data in tag link/, exception.message)
 
     request.env['RAW_POST_DATA'] = '<link test="invalid"></ink>'
     exception = assert_raise Suse::ValidationError do
