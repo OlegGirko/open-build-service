@@ -5,6 +5,7 @@ BASE_DIR=$PWD
 TEMP_DIR=$BASE_DIR/tmp
 MYSQL_BASEDIR=$TEMP_DIR/mysql/
 MYSQL_DATADIR=$MYSQL_BASEDIR/data
+MYSQL_EXTRA_CONF=$TEMP_DIR/my.cnf.add
 MEMCACHED_PID_FILE=$TEMP_DIR/memcached.pid
 MYSQL_SOCKET_DIR=`mktemp -d`
 MYSQL_SOCKET=$MYSQL_SOCKET_DIR/mysql.socket
@@ -20,6 +21,11 @@ if [ -z "$MYSQL_SERVER" ]; then
   echo mysqld not found >&2
   exit 1
 fi
+
+cat << EOF > $MYSQL_EXTRA_CONF
+[mysqld]
+plugin-load-add = auth_socket.so
+EOF
 
 MEMCACHED_SERVER=
 for dir in /usr/bin /usr/sbin /usr/libexec; do
@@ -54,8 +60,8 @@ kill_memcached() {
 rm -rf $MYSQL_DATADIR $MYSQL_SOCKET
 mkdir -p $MYSQL_BASEDIR
 chown -R $MYSQLD_USER $MYSQL_BASEDIR
-mysql_install_db --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR
-$MYSQL_SERVER --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR --skip-networking --socket=$MYSQL_SOCKET --pid-file=$TEMP_DIR/mysqld.pid &
+mysql_install_db --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR --auth-root-authentication-method=socket --auth-root-socket-user=$MYSQLD_USER --defaults-extra-file=$MYSQL_EXTRA_CONF
+$MYSQL_SERVER --defaults-extra-file=$MYSQL_EXTRA_CONF --user=$MYSQLD_USER --datadir=$MYSQL_DATADIR --skip-networking --socket=$MYSQL_SOCKET --pid-file=$TEMP_DIR/mysqld.pid &
 sleep 2
 
 ##################### api
@@ -69,14 +75,14 @@ development:
   adapter:  mysql2
   host:     localhost
   database: api_25
-  username: root
+  username: $MYSQLD_USER
   encoding: utf8
   socket:   $MYSQL_SOCKET
 test:
   adapter:  mysql2
   host:     localhost
   database: api_test
-  username: root
+  username: $MYSQLD_USER
   encoding: utf8
   socket:   $MYSQL_SOCKET
   # disable timeout, required on SLES 11 SP3 at least
@@ -90,7 +96,7 @@ $MEMCACHED_SERVER $MEMCACHED_USER -l 127.0.0.1 -d -P $MEMCACHED_PID_FILE || exit
 export RAILS_ENV=development
 bundle.ruby2.5 exec rake.ruby2.5 db:create || exit 1
 mv db/structure.sql db/structure.sql.git
-xzcat test/dump_2.5.sql.xz | mysql  -u root --socket=$MYSQL_SOCKET
+xzcat test/dump_2.5.sql.xz | mysql  -u $MYSQLD_USER --socket=$MYSQL_SOCKET
 bundle.ruby2.5 exec rake.ruby2.5 db:migrate:with_data db:structure:dump db:drop || exit 1
 ./script/compare_structure_sql.sh db/structure.sql.git db/structure.sql || exit 1
 
@@ -121,7 +127,7 @@ done
 kill_memcached
 
 #cleanup
-/usr/bin/mysqladmin -u root --socket=$MYSQL_SOCKET shutdown || true
+/usr/bin/mysqladmin -u $MYSQLD_USER --socket=$MYSQL_SOCKET shutdown || true
 rm -rf $MYSQL_DATADIR $MYSQL_SOCKET_DIR
 
 exit 0
