@@ -417,6 +417,8 @@ GEM
       unicode-display_width (~> 1.5)
       unicode_utils (~> 1.4)
     strings-ansi (0.1.0)
+    strong_migrations (0.6.2)
+      activerecord (>= 5)
     sysexits (1.2.0)
     tdigest (0.1.1)
       rbtree (~> 0.4.2)
@@ -562,6 +564,7 @@ DEPENDENCIES
   single_test
   sprite-factory (>= 1.5.2)
   sprockets (~> 3.0)
+  strong_migrations
   test-unit
   thinking-sphinx (> 3.1)
   tilt (>= 1.4.1)
