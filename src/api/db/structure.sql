@@ -19,7 +19,7 @@ CREATE TABLE `announcements_users` (
 CREATE TABLE `ar_internal_metadata` (
   `key` varchar(255) CHARACTER SET utf8 NOT NULL,
   `value` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `created_at` datetime NOT NULL,
+  `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
@@ -1456,6 +1456,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20190215131711'),
 ('20190328131711'),
 ('20190412130831'),
-('20190520130009');
+('20190520130009'),
+('20200402141344');
 
 
