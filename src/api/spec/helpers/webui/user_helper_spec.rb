@@ -17,12 +17,12 @@ RSpec.describe Webui::UserHelper do
       end
 
       it 'falls back to users login if realname is empty' do
-        user.update_attributes(realname: '')
+        user.update(realname: '')
         expect(user_and_role(user.login)).to include(link_to(user.login, user_show_path(user: user)))
       end
 
       it 'shows user login and role if realname is empty and role is given' do
-        user.update_attributes(realname: '')
+        user.update(realname: '')
         expect(user_and_role(user.login, role)).to include(link_to("#{user.login} as bugowner", user_show_path(user: user)))
       end
 
