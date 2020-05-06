@@ -6,7 +6,7 @@ class SendEventEmailsJob < ApplicationJob
       subscribers = event.subscribers
 
       if subscribers.empty?
-        event.update_attributes(mails_sent: true)
+        event.update(mails_sent: true)
         next
       end
 
@@ -16,7 +16,7 @@ class SendEventEmailsJob < ApplicationJob
       rescue StandardError => e
         Airbrake.notify(e, event_id: event.id)
       ensure
-        event.update_attributes(mails_sent: true)
+        event.update(mails_sent: true)
       end
     end
     true
