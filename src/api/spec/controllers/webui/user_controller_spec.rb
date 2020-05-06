@@ -313,7 +313,7 @@ RSpec.describe Webui::UserController do
       end
 
       it 'handles validation errors' do
-        user.update_attributes(email: 'invalid')
+        user.update(email: 'invalid')
         user.save!(validate: false)
         delete :delete, params: { user: { login: user.login } }
         expect(user.reload.state).to eq('confirmed')
