@@ -1,4 +1,6 @@
 # Backend::File model to represent files that belongs to the package in the backend
+require_dependency 'backend/file'
+
 class PackageFile < Backend::File
   attr_accessor :project_name, :package_name
 
