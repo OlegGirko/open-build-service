@@ -1,3 +1,5 @@
+require_dependency 'backend/connection_helper'
+
 module Backend
   module Api
     module Build
