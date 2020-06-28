@@ -4,6 +4,8 @@
 #   _project/_pubkey (just for read and delete),
 #   _history (readonly),
 #   _config
+require_dependency 'backend/file'
+
 class BuildReasonFile < Backend::File
   attr_accessor :project_name, :package_name, :repo, :arch
 
