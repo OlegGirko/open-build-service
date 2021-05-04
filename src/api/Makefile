@@ -17,7 +17,6 @@ prepare_dirs:
 
 prepare_rake: prepare_dirs
 	cp -a * $(DESTDIR)$(OBS_API_PREFIX)
-	cp -a .bundle $(DESTDIR)$(OBS_API_PREFIX)
 	rm $(DESTDIR)$(OBS_API_PREFIX)/Makefile
 	rm $(DESTDIR)$(OBS_API_PREFIX)/Procfile
 	touch $(DESTDIR)$(OBS_API_PREFIX)/log/production.log
@@ -49,6 +48,7 @@ log_files:
 	$(foreach logfile,$(OBS_API_LOGS),$(shell touch $(DESTDIR)$(OBS_API_PREFIX)/log/$(logfile) ))
 
 build: config
+	$(shell [ -d $(DESTDIR)/srv/www/obs/api/.bundle ] && rm -rf $(DESTDIR)/srv/www/obs/api/.bundle)
 	# we need to have *something* as secret key
 	echo "" | sha256sum| cut -d\  -f 1 > $(DESTDIR)/srv/www/obs/api/config/secret.key
 	cd $(DESTDIR)/srv/www/obs/api ;\
