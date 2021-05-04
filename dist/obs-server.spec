@@ -941,7 +941,7 @@ usermod -a -G docker obsservicerun
 /srv/www/obs/docs
 
 /srv/www/obs/api/config/locales
-%dir /srv/www/obs/api/vendor
+/srv/www/obs/api/vendor
 /srv/www/obs/api/vendor/diststats
 
 #
