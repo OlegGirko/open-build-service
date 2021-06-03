@@ -8,6 +8,6 @@ class PackageFile < Backend::File
 
   # calculates the real url on the backend to search the file
   def full_path(query = {})
-    URI.encode("/source/#{project_name}/#{package_name}/#{name}") + "?#{query.to_query}"
+    EscapeUtils.escape_uri("/source/#{project_name}/#{package_name}/#{name}") + "?#{query.to_query}"
   end
 end
