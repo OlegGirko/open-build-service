@@ -18,7 +18,7 @@ RSpec.describe Backend::File, vcr: true do
   class TestBackendFile < Backend::File
     attr_accessor :somefile
     def full_path(_query)
-      URI.encode(somefile)
+      EscapeUtils.escape_uri(somefile)
     end
   end
 
