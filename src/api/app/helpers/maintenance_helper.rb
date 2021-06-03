@@ -93,7 +93,7 @@ module MaintenanceHelper
     link['package'] = link['package'].gsub(/\..*/, '') + target_package_name.gsub(/.*\./, '.') # adapt link target with suffix
     link_xml = link.to_xml
     # rubocop:disable Metrics/LineLength
-    Backend::Connection.put "/source/#{URI.escape(target_project.name)}/#{URI.escape(target_package_name)}/_link?rev=repository&user=#{CGI.escape(User.session!.login)}", link_xml
+    Backend::Connection.put "/source/#{EscapeUtils.escape_uri(target_project.name)}/#{EscapeUtils.escape_uri(target_package_name)}/_link?rev=repository&user=#{CGI.escape(User.session!.login)}", link_xml
     # rubocop:enable Metrics/LineLength
     md5 = Digest::MD5.hexdigest(link_xml)
     # commit with noservice parameter
@@ -104,7 +104,7 @@ module MaintenanceHelper
       comment: "Set local link to #{target_package_name} via maintenance_release request"
     }
     upload_params[:requestid] = action.bs_request.number if action
-    upload_path = "/source/#{URI.escape(target_project.name)}/#{URI.escape(target_package_name)}"
+    upload_path = "/source/#{EscapeUtils.escape_uri(target_project.name)}/#{EscapeUtils.escape_uri(target_package_name)}"
     upload_path << Backend::Connection.build_query_from_hash(upload_params, [:user, :comment, :cmd, :noservice, :requestid])
     answer = Backend::Connection.post upload_path, "<directory> <entry name=\"_link\" md5=\"#{md5}\" /> </directory>"
     tpkg.sources_changed(dir_xml: answer)
@@ -127,7 +127,7 @@ module MaintenanceHelper
       rev: 'repository',
       comment: "Set link to #{target_package_name} via maintenance_release request"
     }
-    upload_path = "/source/#{URI.escape(target_project.name)}/#{URI.escape(base_package_name)}/_link"
+    upload_path = "/source/#{EscapeUtils.escape_uri(target_project.name)}/#{EscapeUtils.escape_uri(base_package_name)}/_link"
     upload_path << Backend::Connection.build_query_from_hash(upload_params, [:user, :rev])
     link = "<link package='#{target_package_name}' cicount='copy' />\n"
     md5 = Digest::MD5.hexdigest(link)
@@ -136,7 +136,7 @@ module MaintenanceHelper
     upload_params[:cmd] = 'commitfilelist'
     upload_params[:noservice] = '1'
     upload_params[:requestid] = request.number if request
-    upload_path = "/source/#{URI.escape(target_project.name)}/#{URI.escape(base_package_name)}"
+    upload_path = "/source/#{EscapeUtils.escape_uri(target_project.name)}/#{EscapeUtils.escape_uri(base_package_name)}"
     upload_path << Backend::Connection.build_query_from_hash(upload_params, [:user, :comment, :cmd, :noservice, :requestid])
     answer = Backend::Connection.post upload_path, "<directory> <entry name=\"_link\" md5=\"#{md5}\" /> </directory>"
     lpkg.sources_changed(dir_xml: answer)
@@ -227,7 +227,7 @@ module MaintenanceHelper
     cp_params[:setrelease] = setrelease if setrelease
     cp_params[:multibuild] = '1' unless source_package_name.include?(':')
     # rubocop:disable Metrics/LineLength
-    cp_path = "/build/#{CGI.escape(target_repository.project.name)}/#{URI.escape(target_repository.name)}/#{URI.escape(arch.name)}/#{URI.escape(target_package_name)}"
+    cp_path = "/build/#{CGI.escape(target_repository.project.name)}/#{EscapeUtils.escape_uri(target_repository.name)}/#{EscapeUtils.escape_uri(arch.name)}/#{EscapeUtils.escape_uri(target_package_name)}"
     # rubocop:enable Metrics/LineLength
     cp_path << Backend::Connection.build_query_from_hash(cp_params, [:cmd, :oproject, :opackage,
                                                                      :orepository, :setupdateinfoid,

@@ -497,7 +497,7 @@ RSpec.describe Webui::PackageController, vcr: true do
         it { expect(flash[:success]).to eq("The file '学习总结' has been successfully saved.") }
         it 'creates the file' do
           expect { source_package.source_file('学习总结') }.not_to raise_error
-          expect(URI.encode(source_package.source_file('学习总结'))).to eq(URI.encode(file_to_upload))
+          expect(EscapeUtils.escape_uri(source_package.source_file('学习总结'))).to eq(EscapeUtils.escape_uri(file_to_upload))
         end
       end
 
