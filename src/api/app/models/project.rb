@@ -1088,7 +1088,7 @@ class Project < ApplicationRecord
 
       # copy entire project in the backend
       begin
-        path = "/source/#{URI.escape(name)}"
+        path = "/source/#{EscapeUtils.escape_uri(name)}"
         path << Backend::Connection.build_query_from_hash(params,
                                                           [:cmd, :user, :comment, :oproject, :withbinaries, :withhistory,
                                                            :makeolder, :makeoriginolder, :noservice])
@@ -1364,8 +1364,8 @@ class Project < ApplicationRecord
   end
 
   def self.source_path(project, file = nil, opts = {})
-    path = "/source/#{URI.escape(project)}"
-    path += "/#{URI.escape(file)}" if file.present?
+    path = "/source/#{EscapeUtils.escape_uri(project)}"
+    path += "/#{EscapeUtils.escape_uri(file)}" if file.present?
     path += '?' + opts.to_query if opts.present?
     path
   end
