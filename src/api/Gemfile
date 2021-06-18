@@ -124,9 +124,7 @@ group :test do
   # for spec like reporting
   gem 'minitest-reporters'
   # for integration testing
-  gem 'capybara'
-  # for rspec like matchers
-  gem 'capybara_minitest_spec'
+  gem 'capybara', '>= 2.13.0'
   # to freeze time
   gem 'timecop'
   # to fake backend replies
