@@ -558,6 +558,7 @@ DEPENDENCIES
   simplecov
   single_test
   sprite-factory (>= 1.5.2)
+  sprockets (~> 3.0)
   test-unit
   thinking-sphinx (> 3.1)
   tilt (>= 1.4.1)
