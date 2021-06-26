@@ -86,6 +86,8 @@ gem 'deep_cloneable', '~> 2.4.0'
 gem 'ajax-datatables-rails'
 # for mime lookup
 gem 'mini_mime', '>= 1.0.0'
+# assets compiling is not compatible with sprockets 4
+gem 'sprockets', '~> 3.0'
 
 group :development, :production do
   # to have the delayed job daemon
