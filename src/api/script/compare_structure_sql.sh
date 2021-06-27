@@ -28,6 +28,8 @@ for file in "$git_file" "$migrate_file"; do
 
   # Don't distinguish between text and mediumtext
   sed -r -i "s/(\`[a-zA-Z0-9_]*\`) mediumtext/\1 text/g" "${file}.normalized" || exit 1
+  # Change shortened index name to expected one
+  sed -r -i 's/KEY `index_status_reports_on_checkable`/KEY `index_status_reports_on_checkable_type_and_checkable_id`/' "${file}.normalized" || exit 1
 done
 
 if ! diff "${git_file}.normalized" "${migrate_file}.normalized"; then
