@@ -31,10 +31,19 @@ namespace :db do
     desc 'Dump the database structure to a SQL file'
     task dump: :environment do
       structure = ''
-      abcs = ActiveRecord::Base.configurations
-      case abcs[Rails.env]['adapter']
+      abcs = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env)
+      adapter = if abcs[0].respond_to?(:adapter)
+                  abcs[0].adapter
+                else
+                  abcs[0].config['adapter']
+                end
+      case adapter
       when 'mysql2'
-        ActiveRecord::Base.establish_connection(abcs[Rails.env])
+        begin
+          ActiveRecord::Base.establish_connection(abcs[0])
+        rescue TypeError
+          ActiveRecord::Base.establish_connection(abcs[0].config)
+        end
         con = ActiveRecord::Base.connection
 
         sql = "SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'"
