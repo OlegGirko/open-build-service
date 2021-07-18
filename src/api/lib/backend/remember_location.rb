@@ -9,13 +9,24 @@ module Backend
 
       filtering << method_name
 
-      define_singleton_method(method_name) do |*args, &block|
-        Thread.current[:_influxdb_obs_backend_api_method] = method_name.to_s
-        Thread.current[:_influxdb_obs_backend_api_module] = name
-        original_method.call(*args, &block)
-      ensure
-        Thread.current[:_influxdb_obs_backend_api_method] = nil
-        Thread.current[:_influxdb_obs_backend_api_module] = nil
+      if RUBY_VERSION.split('.')[0].to_i >= 3
+        define_singleton_method(method_name) do |*args, **kwargs, &block|
+          Thread.current[:_influxdb_obs_backend_api_method] = method_name.to_s
+          Thread.current[:_influxdb_obs_backend_api_module] = name
+          original_method.call(*args, **kwargs, &block)
+        ensure
+          Thread.current[:_influxdb_obs_backend_api_method] = nil
+          Thread.current[:_influxdb_obs_backend_api_module] = nil
+        end
+      else
+        define_singleton_method(method_name) do |*args, &block|
+          Thread.current[:_influxdb_obs_backend_api_method] = method_name.to_s
+          Thread.current[:_influxdb_obs_backend_api_module] = name
+          original_method.call(*args, &block)
+        ensure
+          Thread.current[:_influxdb_obs_backend_api_method] = nil
+          Thread.current[:_influxdb_obs_backend_api_module] = nil
+        end
       end
     end
 
