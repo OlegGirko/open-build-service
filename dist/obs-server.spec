@@ -468,7 +468,7 @@ INSTALL=/usr/bin/install
 OBS_BACKEND_PREFIX=%{obs_backend_dir}
 OBS_BACKEND_DATA_DIR=%{obs_backend_data_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
-OBS_API_PREFIX=%{__obs_document_root}/api
+OBS_API_PREFIX=%{__obs_api_prefix}
 OBS_APIDOCS_PREFIX=%{__obs_document_root}/docs
 
 # TODO: find fix for RH in spec/Makefile
