@@ -128,9 +128,11 @@ export GEM_HOME=~/.gems
 %{__obs_bundle_bin} config build.sassc --disable-march-tune-native
 %{__obs_bundle_bin} config build.nio4r --with-cflags='%{optflags} -Wno-return-type'
 %{__obs_bundle_bin} config force_ruby_platform true
-%{__obs_bundle_bin} config set path %{buildroot}%_libdir/obs-api/
+%{__obs_bundle_bin} config set path vendor/bundle
 
 %{__obs_bundle_bin} install --local
+mkdir -p %{buildroot}%_libdir
+mv vendor/bundle %{buildroot}%_libdir/obs-api
 popd
 
 %if 0%{?suse_version}
