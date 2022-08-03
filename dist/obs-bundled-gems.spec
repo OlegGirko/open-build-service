@@ -126,9 +126,11 @@ bundle config build.nokogiri --use-system-libraries
 bundle config build.sassc --disable-march-tune-native
 bundle config build.nio4r --with-cflags='%{optflags} -Wno-return-type'
 bundle config force_ruby_platform true
-bundle config set --local path %{buildroot}%_libdir/obs-api/
+bundle config set --local path vendor/bundle
 
 bundle install --local
+mkdir -p %{buildroot}%_libdir
+mv vendor/bundle %{buildroot}%_libdir/obs-api
 popd
 
 %if 0%{?suse_version}
