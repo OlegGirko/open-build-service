@@ -163,7 +163,7 @@ BuildRequires:  python-devel
 # atm the obs rails version patch above unifies that setting among the applications
 # also see requires in the obs-server-api sub package
 BuildRequires:  openssl
-BuildRequires:  perl-BSSolv >= 0.36
+BuildRequires:  perl(BSSolv) >= 0.17
 BuildRequires:  perl-Compress-Zlib
 BuildRequires:  perl-DBD-SQLite
 BuildRequires:  perl-Diff-LibXDiff
@@ -188,7 +188,7 @@ PreReq:         /usr/sbin/useradd /usr/sbin/groupadd
 BuildArch:      noarch
 Requires(pre):  obs-common
 Requires:       %{__obs_build_package_name} >= 20201211
-Requires:       perl-BSSolv >= 0.36
+Requires:       perl(BSSolv) >= 0.17
 Requires:       perl(Date::Parse)
 # Required by source server
 Requires:       diffutils
