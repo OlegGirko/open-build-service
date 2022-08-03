@@ -101,6 +101,9 @@ Requires:       inst-source-utils
 %endif
 Requires:       nodejs
 Requires:       obs-api-deps = %{version}
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+Requires:       mariadb-server
+%endif
 
 %description -n obs-api-testsuite-deps
 To simplify splitting the test suite packages off the main package,
