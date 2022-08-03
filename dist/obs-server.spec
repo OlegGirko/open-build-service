@@ -168,7 +168,7 @@ Source0:        open-build-service-%version.tar.xz
 # also see requires in the obs-server-api sub package
 BuildRequires:  openssl
 BuildRequires:  procps
-BuildRequires:  perl-BSSolv >= 0.36
+BuildRequires:  perl(BSSolv) >= 0.17
 BuildRequires:  perl(Compress::Zlib)
 BuildRequires:  perl(DBD::SQLite)
 BuildRequires:  perl(Date::Format)
@@ -196,7 +196,7 @@ PreReq:         %{_sbindir}/useradd %{_sbindir}/groupadd
 BuildArch:      noarch
 Requires(pre):  obs-common
 Requires:       %{__obs_build_package_name} >= 20201211
-Requires:       perl-BSSolv >= 0.36
+Requires:       perl(BSSolv) >= 0.17
 Requires:       perl(Date::Parse)
 # Required by source server
 Requires:       diffutils
