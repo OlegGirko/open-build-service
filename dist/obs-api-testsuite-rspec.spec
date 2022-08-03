@@ -28,6 +28,10 @@ BuildRequires:  obs-api-testsuite-deps
 # rspec specific dependencies
 BuildRequires:  chromedriver
 BuildRequires:  xorg-x11-fonts
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+# Needed for rubygem-byebug
+BuildRequires:  rubygem-irb
+%endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?disable_obs_frontend_test_suite} || 0%{?disable_obs_test_suite}
 ExclusiveArch:  nothere
