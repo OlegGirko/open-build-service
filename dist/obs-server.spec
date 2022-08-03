@@ -214,6 +214,8 @@ BuildRequires:  xz
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 BuildRequires:  rubygem-sassc
 BuildRequires: obs-server-macros
+# Needed for rubygem-byebug
+BuildRequires:  rubygem-irb
 %endif
 
 %if 0%{?suse_version:1}
