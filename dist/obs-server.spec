@@ -28,7 +28,6 @@
 %global apache_confdir /etc/httpd
 %global apache_vhostdir %{apache_confdir}/conf.d
 %global apache_logdir /var/log/httpd
-%global apache_datadir /srv/www
 %define apache_group_requires Requires(pre):  httpd
 %global apache_requires \
 Requires:       httpd\
@@ -43,10 +42,20 @@ Requires:       rubygem-rails\
 %define __obs_ruby_bin /usr/bin/ruby
 %define __obs_bundle_bin /usr/bin/bundle
 %define __obs_rake_bin /usr/bin/rake
-%define __obs_document_root %{apache_datadir}/obs
-%define __obs_api_prefix %{__obs_document_root}/api
-%define __obs_api_log_dir %{__obs_api_prefix}/log
+%define __obs_document_root %{_datadir}/obs
+%define __obs_api_prefix %{_datadir}/obs-api
+%define __obs_api_log_dir %{_localstatedir}/log/obs-api
 %define __obs_build_package_name obs-build
+
+%define secret_key_file %{__obs_api_prefix}/config/secret.key
+%define obs_backend_data_dir /var/lib/obs
+%define obs_backend_dir /usr/lib/obs/server
+%define obs_srcserver_port 15352
+%define obs_reposerver_port 15252
+%define obs_serviceserver_port 15152
+%define obs_clouduploadserver_port 15452
+%define obs_backend_log_dir %{_localstatedir}/log/obs
+%define obs_backend_service_log_dir %{_localstatedir}/log/obs/service
 
 %else
 %global apache_user wwwrun
@@ -77,8 +86,6 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define __obs_api_log_dir %{__obs_api_prefix}/log
 %define __obs_build_package_name build
 
-%endif
-
 %define secret_key_file %{__obs_api_prefix}/config/secret.key
 %define obs_backend_data_dir /srv/obs
 %define obs_backend_dir /usr/lib/obs/server
@@ -88,6 +95,8 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define obs_clouduploadserver_port 5452
 %define obs_backend_log_dir %{obs_backend_data_dir}/log
 %define obs_backend_service_log_dir %{obs_backend_data_dir}/service/log
+
+%endif
 
 %if ! %{defined _restart_on_update_reload}
 %define _restart_on_update_reload() (\
@@ -1034,7 +1043,7 @@ usermod -a -G docker obsservicerun
 %config(noreplace) %{__obs_api_prefix}/config/thinking_sphinx.yml
 %attr(-,%{apache_user},%{apache_group}) %config(noreplace) %{__obs_api_prefix}/config/production.sphinx.conf
 
-%dir %{apache_datadir}
+%{?apache_datadir:%dir %{apache_datadir}}
 %dir %{__obs_document_root}
 %dir %{__obs_api_prefix}
 %dir %{__obs_api_prefix}/config
