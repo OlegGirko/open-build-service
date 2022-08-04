@@ -16,6 +16,14 @@
 #
 
 
+%if 0%{?suse_version}
+# openSUSE needs /usr/sbin/rc* scripts for services
+%bcond_without rc_scripts
+%else
+# others don't need them
+%bcond_with rc_scripts
+%endif
+
 %if 0%{?fedora}
 %global sbin %{_sbindir}
 %else
@@ -539,7 +547,7 @@ export DESTDIR=$RPM_BUILD_ROOT
 export OBS_VERSION="%{version}"
 DESTDIR=%{buildroot} make install
 
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 systemd_services="$(basename --multiple --suffix .service %{buildroot}%{_unitdir}/*.service) $(basename --multiple --suffix .target %{buildroot}%{_unitdir}/*.target)"
 for systemd_service in $systemd_services; do
     if [[ $systemd_service != *"@"* ]]; then
@@ -893,7 +901,7 @@ fi
 %{_sbindir}/obs-setup
 %{_sbindir}/obs_serverstatus
 %{_sbindir}/obsscheduler
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 /usr/sbin/rcobsdispatcher
 /usr/sbin/rcobspublisher
 /usr/sbin/rcobsrepserver
@@ -995,7 +1003,7 @@ fi
 %dir /etc/cron.d
 %endif
 %config(noreplace) /etc/cron.d/cleanup_scm_cache
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 /usr/sbin/rcobsservice
 %endif
 %{obs_backend_dir}/bs_service
@@ -1016,7 +1024,7 @@ usermod -a -G docker obsservicerun
 %defattr(-,root,root)
 %{_unitdir}/obsworker.service
 %{_sbindir}/obsworker
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 /usr/sbin/rcobsworker
 %endif
 
@@ -1063,7 +1071,7 @@ usermod -a -G docker obsservicerun
 %{_unitdir}/obs-delayedjob-queue-staging.service
 %{_unitdir}/obs-delayedjob-queue-scm.service
 %{_unitdir}/obs-sphinx.service
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 %{_sbindir}/rcobs-api-support
 %{_sbindir}/rcobs-clockwork
 %{_sbindir}/rcobs-delayedjob-queue-consistency_check
@@ -1155,7 +1163,7 @@ usermod -a -G docker obsservicerun
 %{obs_backend_dir}/functions.setup-appliance.sh
 %{_unitdir}/obsstoragesetup.service
 %{_sbindir}/obsstoragesetup
-%if 0%{?suse_version}
+%if %{with rc_scripts}
 /usr/sbin/rcobsstoragesetup
 %endif
 
