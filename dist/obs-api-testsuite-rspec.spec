@@ -16,6 +16,14 @@
 #
 
 
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%define __obs_ruby_bin /usr/bin/ruby
+%define __obs_rake_bin /usr/bin/rake
+%else
+%define __obs_ruby_bin /usr/bin/ruby.ruby3.1
+%define __obs_rake_bin /usr/bin/rake.ruby3.1
+%endif
+
 Name:           obs-api-testsuite-rspec
 Version:        2.10~pre
 Release:        0
@@ -46,6 +54,19 @@ of packaging the application
 
 %prep
 %setup -q -n open-build-service-%{version}
+
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+sed -i \
+    -e '1s|^#!/usr/bin/env ruby\.ruby.*|#!%{__obs_ruby_bin}|' \
+    -e '1s|^#!/usr/bin/env ruby|#!%{__obs_ruby_bin}|' \
+    -e '1s|^#! */usr/bin/ruby\.ruby.*|#!%{__obs_ruby_bin}|' \
+    docs/api/restility/bin/* \
+    src/api/bin/* \
+    src/api/script/*
+sed -i \
+    -e '1s|^#! */usr/bin/rake\.ruby.*|#!%{__obs_rake_bin}|' \
+    src/api/Rakefile \
+%endif
 
 %build
 # run in build environment
