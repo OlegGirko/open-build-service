@@ -290,7 +290,8 @@ The Open Build Service (OBS) backend is used to store all sources and binaries. 
 calculates the need for new build jobs and distributes it.
 
 %package -n obs-worker
-Requires(pre):  obs-common
+Requires:       user(obsrun)
+Requires:       group(obsrun)
 Requires:       cpio
 Requires:       curl
 Requires:       perl(Compress::Zlib)
@@ -1056,6 +1057,11 @@ usermod -a -G docker obsservicerun
 
 %files -n obs-worker
 %defattr(-,root,root)
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%config(noreplace) /etc/sysconfig/obs-server
+%else
+%{_fillupdir}/sysconfig.obs-server
+%endif
 %{_unitdir}/obsworker.service
 /usr/sbin/obsworker
 %if %{with rc_scripts}
