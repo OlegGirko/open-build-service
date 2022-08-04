@@ -479,6 +479,20 @@ rm -rf src/backend/build
 
 find -name .keep -o -name .gitignore | xargs rm -rf
 
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+sed -i \
+    -e '1s|^#!/usr/bin/env ruby\.ruby.*|#!%{__obs_ruby_bin}|' \
+    -e '1s|^#!/usr/bin/env ruby|#!%{__obs_ruby_bin}|' \
+    -e '1s|^#! */usr/bin/ruby\.ruby.*|#!%{__obs_ruby_bin}|' \
+    docs/api/restility/bin/* \
+    src/api/bin/* \
+    src/api/script/* \
+    dist/resolve_swagger_yaml.rb
+sed -i \
+    -e '1s|^#! */usr/bin/rake\.ruby.*|#!%{__obs_rake_bin}|' \
+    src/api/Rakefile \
+%endif
+
 %build
 export DESTDIR=$RPM_BUILD_ROOT
 export BUNDLE_FORCE_RUBY_PLATFORM=true
