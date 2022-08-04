@@ -6,7 +6,11 @@ export BASH_TAP_ROOT=$(dirname $0)
 #
 . $(dirname $0)/bash-tap-bootstrap
 #
-plan tests 5
+if [ -n "$WITH_RC_SCRIPTS" ]; then
+  plan tests 5
+else
+  plan tests 3
+fi
 for i in \
     $DESTDIR/etc/logrotate.d/obs-server\
     $DESTDIR$SBINDIR/obs_admin\
@@ -17,10 +21,12 @@ do
 
 done
 
-for i in \
-    $DESTDIR$SBINDIR/rcobssrcserver\
-    $DESTDIR$SBINDIR/rcobsdodup
-do
-  [[ -L $i ]]
-  is $? 0 "Checking $i"
-done
+if [ -n "$WITH_RC_SCRIPTS" ]; then
+  for i in \
+      $DESTDIR$SBINDIR/rcobssrcserver\
+      $DESTDIR$SBINDIR/rcobsdodup
+  do
+    [[ -L $i ]]
+    is $? 0 "Checking $i"
+  done
+fi
