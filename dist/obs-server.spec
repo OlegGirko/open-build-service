@@ -651,6 +651,10 @@ echo "WARNING:"
 exit 0
 %endif
 
+%if %{with rc_scripts}
+export WITH_RC_SCRIPTS=1
+%endif
+
 export DESTDIR=$RPM_BUILD_ROOT
 # check installed backend
 pushd $RPM_BUILD_ROOT%{obs_backend_dir}
