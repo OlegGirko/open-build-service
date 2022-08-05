@@ -1,0 +1,29 @@
+policy_module(obs-common, 1.0)
+
+gen_require(`
+    class dir search;
+')
+
+type obs_lib_t;
+files_type(obs_lib_t);
+
+type obs_setup_t;
+type obs_setup_exec_t;
+
+type obs_srcserver_port_t;
+corenet_port(obs_srcserver_port_t)
+
+init_daemon_domain(obs_setup_t, obs_setup_exec_t)
+
+manage_dirs_pattern(obs_setup_exec_t, obs_lib_t, obs_lib_t)
+manage_files_pattern(obs_setup_exec_t, obs_lib_t, obs_lib_t)
+
+allow obs_setup_t obs_setup_exec_t:file execute_no_trans;
+allow obs_setup_t obs_lib_t:dir search;
+auth_read_passwd(obs_setup_t)
+corecmd_check_exec_shell(obs_setup_t)
+corecmd_shell_entry_type(obs_setup_t)
+sssd_read_public_files(obs_setup_t)
+sssd_run_stream_connect(obs_setup_t)
+sssd_search_lib(obs_setup_t)
+sssd_stream_connect(obs_setup_t)
