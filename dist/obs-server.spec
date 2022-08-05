@@ -41,6 +41,7 @@
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 %global apache_user apache
 %global apache_group apache
+%global apache_service httpd
 %global apache_confdir /etc/httpd
 %global apache_vhostdir %{apache_confdir}/conf.d
 %global apache_logdir /var/log/httpd
@@ -75,6 +76,7 @@ Requires:       rubygem-rails\
 %else
 %global apache_user wwwrun
 %global apache_group www
+%global apache_service apache2
 %global apache_confdir /etc/apache2
 %global apache_vhostdir %{apache_confdir}/vhosts.d
 %global apache_logdir /var/log/apache2
@@ -971,7 +973,7 @@ fi
 
 %postun -n obs-api
 %service_del_postun %{obs_api_support_scripts}
-%service_del_postun -r apache2
+%service_del_postun -r %{apache_service}
 %restart_on_update memcached
 %if %{with selinux}
 test "$1" -eq 0 && semodule -r obs-api >/dev/null 2>&1 || :
