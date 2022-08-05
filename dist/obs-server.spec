@@ -24,6 +24,14 @@
 %bcond_with rc_scripts
 %endif
 
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+# Enable SELinux support for Fedora / RHEL / CentOS
+%bcond_without selinux
+%else
+# Disable for all others
+%bcond_with selinux
+%endif
+
 %if 0%{?fedora}
 %global sbin %{_sbindir}
 %else
@@ -269,6 +277,15 @@ Requires:       user(obsservicerun)
 # zstd is esp for Arch Linux
 Requires:       zstd
 
+%if %{with selinux}
+Requires(post): policycoreutils
+Requires(post): policycoreutils-python-utils
+Requires(postun): policycoreutils
+Requires(postun): policycoreutils-python-utils
+BuildRequires:  selinux-policy-devel
+BuildRequires:  checkpolicy
+%endif
+
 Obsoletes:      obs-productconverter < 2.9
 Obsoletes:      obs-source_service < 2.9
 Provides:       obs-productconverter = %version
@@ -327,6 +344,10 @@ Requires:       user(obsservicerun)
 Requires(pre):  shadow
 Requires(pre):  %fillup_prereq
 %endif
+%if %{with selinux}
+Requires(post): policycoreutils
+Requires(postun): policycoreutils
+%endif
 
 %description -n obs-common
 This is a package providing basic configuration files.
@@ -361,6 +382,11 @@ Requires:       ghostscript-fonts-std
 Requires:       procps
 Requires:       obs-api-deps = %{version}
 Requires:       obs-bundled-gems = %{version}
+
+%if %{with selinux}
+Requires(post): policycoreutils
+Requires(postun): policycoreutils
+%endif
 
 %description -n obs-api
 This is the API server instance, and the web client for the
@@ -545,6 +571,10 @@ bundle install --local
 rm -rf vendor/cache/* vendor/cache.next/*
 popd
 
+%if %{with selinux}
+make -C dist/selinux
+%endif
+
 %if 0%{?suse_version} >= 1500
 %sysusers_generate_pre dist/system-user-obsrun.conf obsrun system-user-obsrun.conf
 %sysusers_generate_pre dist/system-user-obsservicerun.conf obsservicerun system-user-obsservicerun.conf
@@ -605,6 +635,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/obs/cloudupload
 install -m 644 $RPM_BUILD_DIR/open-build-service-%version/dist/ec2utils.conf.example $RPM_BUILD_ROOT/etc/obs/cloudupload/.ec2utils.conf
 mkdir -p $RPM_BUILD_ROOT/etc/obs/cloudupload/.aws
 install -m 644 $RPM_BUILD_DIR/open-build-service-%version/dist/aws_credentials.example $RPM_BUILD_ROOT/etc/obs/cloudupload/.aws/credentials
+
+%if %{with selinux}
+DESTDIR=%{buildroot} make -C dist/selinux install
+%endif
 
 # Link the assets without hash to make them accessible for third party tools like the pattern library
 pushd $RPM_BUILD_ROOT%{__obs_api_prefix}/public/assets/webui/
@@ -775,6 +809,16 @@ exit 0
 %service_del_preun %{obs_api_support_scripts}
 
 %post
+%if %{with selinux}
+%{_sbindir}/semodule -i %{_datadir}/selinux/packages/obs-server.pp
+%{_sbindir}/semanage port -a -t obs_srcserver_port_t -p tcp %{obs_srcserver_port}
+%{_sbindir}/semanage port -a -t obs_repserver_port_t -p tcp %{obs_reposerver_port}
+%{_sbindir}/semanage port -a -t obs_serviceserver_port_t -p tcp %{obs_serviceserver_port}
+%{_sbindir}/semanage port -a -t obs_clouduploadserver_port_t -p tcp %{obs_clouduploadserver_port}
+%{_sbindir}/fixfiles -R %{name} restore || :
+%{_sbindir}/restorecon -R %{obs_backend_data_dir} %{obs_backend_log_dir} || :
+%endif
+
 %service_add_post obsscheduler.service
 %service_add_post obssrcserver.service
 %service_add_post obsrepserver.service
@@ -827,10 +871,26 @@ fi
 # cleanup empty directory just in case
 rmdir %{obs_backend_data_dir} 2> /dev/null || :
 
+%if %{with selinux}
+if [ "$1" -eq 0 ]; then
+    %{_sbindir}/semanage port -d -p tcp %{obs_srcserver_port}
+    %{_sbindir}/semanage port -d -p tcp %{obs_reposerver_port}
+    %{_sbindir}/semanage port -d -p tcp %{obs_serviceserver_port}
+    %{_sbindir}/semanage port -d -p tcp %{obs_clouduploadserver_port}
+    %{_sbindir}/semodule -r obs-server || :
+    %{_sbindir}/fixfiles -R %{name} restore || :
+    [ -d %{obs_backend_data_dir} ] && %{_sbindir}/restorecon -R %{obs_backend_data_dir} || :
+    [ -d %{obs_backend_log_dir} ] && %{_sbindir}/restorecon -R %{obs_backend_log_dir} || :
+fi
+%endif
+
 %postun -n obs-common
 # NOT used on purpose: restart_on_update obsstoragesetup
 # This is just run once on boot
 %service_del_postun -n obsstoragesetup.service
+%if %{with selinux}
+test "$1" -eq 0 && semodule -r obs-common >/dev/null 2>&1 || :
+%endif
 
 %postun -n obs-worker
 # NOT used on purpose: restart_on_update obsworker
@@ -864,6 +924,11 @@ fi
 %{fillup_only -n obs-server}
 %endif
 
+%if %{with selinux}
+semodule -i %{_datadir}/selinux/packages/obs-common.pp
+%{_sbindir}/fixfiles -R obs-common restore || :
+%endif
+
 %post -n obs-api
 if [ -e %{__obs_document_root}/frontend/config/database.yml ] && [ ! -e %{__obs_api_prefix}/config/database.yml ]; then
   cp %{__obs_document_root}/frontend/config/database.yml %{__obs_api_prefix}/config/database.yml
@@ -886,6 +951,12 @@ chown root:%{apache_group} %{secret_key_file}
 sed -i -e 's,[ ]*adapter: mysql$,  adapter: mysql2,' %{__obs_api_prefix}/config/database.yml
 touch %{__obs_api_prefix}/log/production.log
 chown %{apache_user}:%{apache_group} %{__obs_api_prefix}/log/production.log
+
+%if %{with selinux}
+semodule -i %{_datadir}/selinux/packages/obs-api.pp
+restorecon -R %{__obs_api_log_dir}
+%{_sbindir}/fixfiles -R obs-common restore || :
+%endif
 
 %service_add_post %{obs_api_support_scripts}
 # We need to touch the last_deploy file in the post hook
@@ -913,6 +984,9 @@ fi
 %service_del_postun %{obs_api_support_scripts}
 %service_del_postun -r apache2
 %restart_on_update memcached
+%if %{with selinux}
+test "$1" -eq 0 && semodule -r obs-api >/dev/null 2>&1 || :
+%endif
 
 %files
 %defattr(-,root,root)
@@ -1052,6 +1126,10 @@ fi
 # formerly obs-productconverter
 /usr/bin/obs_productconvert
 %{obs_backend_dir}/bs_productconvert
+
+%if %{with selinux}
+%{_datadir}/selinux/packages/obs-server.pp
+%endif
 
 # add obsservicerun user into docker group if docker
 # gets installed
@@ -1195,6 +1273,10 @@ usermod -a -G docker obsservicerun
 %ghost %{__obs_api_log_dir}/production.log
 %ghost %attr(0640,root,%{apache_group}) %secret_key_file
 
+%if %{with selinux}
+%{_datadir}/selinux/packages/obs-api.pp
+%endif
+
 %files -n obs-common
 %defattr(-,root,root)
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
@@ -1208,6 +1290,9 @@ usermod -a -G docker obsservicerun
 %{_sbindir}/obsstoragesetup
 %if %{with rc_scripts}
 /usr/sbin/rcobsstoragesetup
+%endif
+%if %{with selinux}
+%{_datadir}/selinux/packages/obs-common.pp
 %endif
 
 %files -n obs-utils
