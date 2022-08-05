@@ -1,0 +1,11 @@
+@@OBS_BACKEND_PREFIX@@/bs_.* gen_context(system_u:object_r:obs_exec_t,s0)
+@@OBS_BACKEND_PREFIX@@(/.*)? gen_context(system_u:object_r:obs_lib_t,s0)
+@@OBS_BACKEND_DATA_DIR@@/repos(/.*)? system_u:object_r:obs_repo_t:s0
+@@OBS_BACKEND_DATA_DIR@@/build/[^/]+/[^.]+/[^/]+/:full(/.*)? system_u:object_r:obs_repo_t:s0
+@@OBS_BACKEND_DATA_DIR@@/build/[^/]+/[^.]+/[^/]+/:repo(/.*)? system_u:object_r:obs_repo_t:s0
+@@OBS_BACKEND_DATA_DIR@@/build/[^/]+/[^.]+/[^/]+/:meta(/.*)? system_u:object_r:obs_repo_t:s0
+@@OBS_BACKEND_DATA_DIR@@/build/[^/]+/[^.]+/[^/]+/:.* system_u:object_r:obs_var_lib_t:s0
+@@OBS_BACKEND_DATA_DIR@@/build/[^/]+/[^.]+/[^/]+/.* system_u:object_r:obs_repo_t:s0
+@@OBS_BACKEND_DATA_DIR@@(/.*)? gen_context(system_u:object_r:obs_var_lib_t,s0)
+@@OBS_BACKEND_LOG_DIR@@(/.*)? gen_context(system_u:object_r:obs_log_t,s0)
+/usr/lib/obs/service(/.*)? gen_context(system_u:object_r:obs_service_t,s0)

@@ -1,0 +1,112 @@
+policy_module(obs-server, 1.0)
+
+gen_require(`
+    type hi_reserved_port_t;
+    type logrotate_t;
+    type httpd_t;
+    type tmp_t;
+    type rpm_exec_t;
+    type rpm_var_lib_t;
+    type gpg_agent_exec_t;
+    type gpg_exec_t;
+    type obs_lib_t;
+    type obs_srcserver_port_t;
+    class file { getattr read };
+    class lnk_file { getattr read };
+    class capability { dac_override setgid chown setuid net_bind_service };
+    class tcp_socket { name_bind name_connect create_stream_socket_perms };
+')
+
+type obs_t;
+type obs_exec_t;
+
+type obs_var_lib_t;
+files_type(obs_var_lib_t);
+
+type obs_repo_t;
+files_type(obs_repo_t);
+
+type obs_log_t;
+logging_log_file(obs_log_t);
+
+type obs_service_t;
+files_type(obs_service_t);
+
+init_daemon_domain(obs_t, obs_exec_t)
+init_daemon_domain(obs_t, obs_service_t)
+
+type obs_repserver_port_t;
+corenet_port(obs_repserver_port_t)
+
+type obs_serviceserver_port_t;
+corenet_port(obs_serviceserver_port_t)
+
+type obs_clouduploadserver_port_t;
+corenet_port(obs_clouduploadserver_port_t)
+
+list_dirs_pattern(obs_t, obs_lib_t, obs_lib_t)
+read_files_pattern(obs_t, obs_lib_t, obs_lib_t)
+
+manage_dirs_pattern(obs_t, obs_var_lib_t, obs_var_lib_t)
+manage_files_pattern(obs_t, obs_var_lib_t, obs_var_lib_t)
+
+manage_dirs_pattern(obs_t, obs_repo_t, obs_repo_t)
+manage_files_pattern(obs_t, obs_repo_t, obs_repo_t)
+
+manage_dirs_pattern(obs_t, obs_log_t, obs_log_t)
+manage_files_pattern(obs_t, obs_log_t, obs_log_t)
+
+allow obs_t self:capability { dac_override setgid chown setuid net_bind_service };
+allow obs_t self:unix_stream_socket connectto;
+allow obs_t obs_exec_t:file execute_no_trans;
+
+allow obs_t obs_lib_t:lnk_file { getattr read };
+
+allow obs_t obs_var_lib_t:file { map };
+allow obs_t obs_var_lib_t:lnk_file { getattr read create setattr unlink };
+allow obs_t obs_var_lib_t:fifo_file { create getattr open read write ioctl };
+allow obs_t obs_var_lib_t:sock_file { create getattr open read write unlink };
+
+auth_read_passwd(obs_t)
+auth_read_shadow(obs_t)
+corecmd_exec_bin(obs_t)
+sssd_search_lib(obs_t)
+systemd_userdbd_runtime_manage_symlinks(obs_t)
+corecmd_mmap_bin_files(obs_t)
+sysnet_dns_name_resolve(obs_t)
+
+corenet_tcp_bind_generic_node(obs_t)
+corenet_tcp_connect_http_port(obs_t)
+corenet_tcp_connect_unreserved_ports(obs_t)
+corenet_tcp_connect_generic_port(obs_t)
+dbus_send_system_bus(obs_t)
+fs_getattr_xattr_fs(obs_t)
+allow obs_t self:tcp_socket create_stream_socket_perms;
+allow obs_t obs_srcserver_port_t:tcp_socket { name_bind name_connect };
+allow obs_t obs_repserver_port_t:tcp_socket { name_bind name_connect };
+allow obs_t obs_serviceserver_port_t:tcp_socket { name_bind name_connect };
+allow obs_t obs_clouduploadserver_port_t:tcp_socket { name_bind name_connect };
+allow obs_t hi_reserved_port_t:tcp_socket name_bind;
+dev_read_urand(obs_t)
+
+allow obs_t obs_service_t:dir { getattr open read search };
+allow obs_t obs_service_t:file execute_no_trans;
+allow obs_t obs_service_t:lnk_file read;
+
+allow obs_t rpm_exec_t:file { execute execute_no_trans open read map };
+allow obs_t rpm_var_lib_t:dir search;
+allow obs_t rpm_var_lib_t:file open;
+
+allow obs_t gpg_agent_exec_t:file { execute execute_no_trans open read map };
+allow obs_t gpg_exec_t:file { execute execute_no_trans open read map };
+
+allow obs_t tmp_t:dir { add_name create read remove_name rmdir setattr watch write };
+allow obs_t tmp_t:file { create link open rename unlink write };
+allow obs_t tmp_t:sock_file { create getattr setattr unlink write };
+
+allow logrotate_t obs_log_t:file { create getattr open read setattr unlink write };
+allow logrotate_t obs_var_lib_t:dir read;
+
+list_dirs_pattern(httpd_t, obs_repo_t, obs_repo_t)
+read_files_pattern(httpd_t, obs_repo_t, obs_repo_t)
+allow httpd_t obs_repo_t:file map;
