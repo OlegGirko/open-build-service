@@ -61,3 +61,6 @@ nbproject
 .idea/
 .kanku/
 .ackrc
+/dist/selinux/*.fc
+/dist/selinux/*.pp
+/dist/selinux/tmp
