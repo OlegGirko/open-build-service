@@ -1,0 +1,15 @@
+policy_module(obs-api, 1.0)
+
+gen_require(`
+    type passenger_t;
+    type passenger_tmp_t;
+    type passenger_exec_t;
+    type obs_srcserver_port_t;
+    type init_t;
+')
+
+corenet_tcp_connect_memcache_port(passenger_t)
+corenet_tcp_connect_mysqld_port(passenger_t)
+allow passenger_t obs_srcserver_port_t:tcp_socket name_connect;
+allow init_t passenger_exec_t:file { open read execute execute_no_trans };
+allow init_t passenger_tmp_t:file open;
