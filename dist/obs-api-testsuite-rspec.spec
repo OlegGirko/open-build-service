@@ -68,6 +68,9 @@ sed -i \
     src/api/Rakefile \
 %endif
 
+bundler_version="`bundle version | sed 's/^Bundler version \([^ ]*\) .*$/\1/'`"
+sed -i "\$s/^\\( *\\)[^ ]*\$/\\1$bundler_version/" src/api/Gemfile.lock
+
 %build
 # run in build environment
 pushd src/backend/
