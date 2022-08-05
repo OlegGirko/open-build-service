@@ -1,0 +1,18 @@
+## <summary>Common policy for OBS (Open Build Service) API and backend</summary>
+## <desc>
+##     <p>
+##         <a href="https://openbuildservice.org/">
+##             The Open Build Service (OBS)
+##         </a>
+##         is a generic system to build and distribute binary packages
+##         from sources in an automatic, consistent and reproducible way.
+##         You can release packages as well as updates, add-ons, appliances
+##         and entire distributions for a wide range of operating systems
+##         and hardware architectures.
+##     </p>
+##     <p>
+##         This policy is a common part needed for both API frontend
+##         (web services and web interface) and
+##         backend (background services building and publishing packages).
+##     </p>
+## </desc>
