@@ -1,0 +1,1 @@
+@@OBS_BACKEND_PREFIX@@/setup-appliance.sh gen_context(system_u:object_r:obs_setup_exec_t,s0)
