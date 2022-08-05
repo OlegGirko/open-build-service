@@ -491,6 +491,9 @@ sed -i \
     src/api/Rakefile \
 %endif
 
+bundler_version="`bundle version | sed -E 's/^(Bundler version)? *([^ ]*) .*$/\2/'`"
+sed -i "\$s/^\\( *\\)[^ ]*\$/\\1$bundler_version/" src/api/Gemfile.lock
+
 %build
 export DESTDIR=$RPM_BUILD_ROOT
 export BUNDLE_FORCE_RUBY_PLATFORM=true
