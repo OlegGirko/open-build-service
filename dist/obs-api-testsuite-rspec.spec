@@ -35,10 +35,14 @@ Source0:        open-build-service-%version.tar.xz
 BuildRequires:  obs-api-testsuite-deps
 # rspec specific dependencies
 BuildRequires:  chromedriver
-BuildRequires:  xorg-x11-fonts
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+BuildRequires:  xorg-x11-fonts-Type1
+BuildRequires:  xorg-x11-fonts-cyrillic
+BuildRequires:  xorg-x11-fonts-misc
 # Needed for rubygem-byebug
 BuildRequires:  rubygem-irb
+%else
+BuildRequires:  xorg-x11-fonts
 %endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?disable_obs_frontend_test_suite} || 0%{?disable_obs_test_suite}
