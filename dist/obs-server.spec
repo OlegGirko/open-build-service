@@ -590,6 +590,12 @@ export DESTDIR=$RPM_BUILD_ROOT
 export OBS_VERSION="%{version}"
 DESTDIR=%{buildroot} RAILS_RELATIVE_URL_ROOT=../.. make install
 
+%if "%{apache_service}" != "apache2"
+sed -i \
+    's/apache2\.service/%{apache_service}.service/g' \
+    %{buildroot}%{_unitdir}/obsapisetup.service
+%endif
+
 %if %{with rc_scripts}
 systemd_services="$(basename --multiple --suffix .service %{buildroot}%{_unitdir}/*.service) $(basename --multiple --suffix .target %{buildroot}%{_unitdir}/*.target)"
 for systemd_service in $systemd_services; do
