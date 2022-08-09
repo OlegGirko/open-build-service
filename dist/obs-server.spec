@@ -202,7 +202,7 @@ BuildRequires:  perl(Test::Simple) > 1
 BuildRequires:  %{rubygem hana}
 BuildRequires:  %{rubygem json_refs}
 # /for the resolve_swagger_yaml.rb script
-PreReq:         /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 BuildArch:      noarch
 Requires(pre):  obs-common
 Requires:       %{__obs_build_package_name} >= 20201211
@@ -210,7 +210,7 @@ Requires:       perl(BSSolv) >= 0.17
 Requires:       perl(Date::Parse)
 # Required by source server
 Requires:       diffutils
-PreReq:         git-core
+Requires(pre):  git-core
 Requires:       patch
 Requires:       createrepo_c >= 0.20
 Recommends:     cron logrotate
