@@ -588,7 +588,7 @@ make resolve_swagger_yaml
 %install
 export DESTDIR=$RPM_BUILD_ROOT
 export OBS_VERSION="%{version}"
-DESTDIR=%{buildroot} make install
+DESTDIR=%{buildroot} RAILS_RELATIVE_URL_ROOT=../.. make install
 
 %if %{with rc_scripts}
 systemd_services="$(basename --multiple --suffix .service %{buildroot}%{_unitdir}/*.service) $(basename --multiple --suffix .target %{buildroot}%{_unitdir}/*.target)"
