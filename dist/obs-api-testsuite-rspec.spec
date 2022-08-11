@@ -70,6 +70,10 @@ sed -i \
 sed -i \
     -e '1s|^#! */usr/bin/rake\.ruby.*|#!%{__obs_rake_bin}|' \
     src/api/Rakefile \
+
+sed -i \
+    -e "s|'/usr/lib64/chromium/chromedriver'|'/usr/lib64/chromium-browser/chromedriver'|" \
+    src/api/spec/support/capybara.rb
 %endif
 
 bundler_version="`bundle version | sed 's/^Bundler version \([^ ]*\) .*$/\1/'`"
