@@ -36,6 +36,7 @@ BuildRequires:  obs-api-testsuite-deps
 # rspec specific dependencies
 BuildRequires:  chromedriver
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+BuildRequires:  chromium
 BuildRequires:  xorg-x11-fonts-Type1
 BuildRequires:  xorg-x11-fonts-cyrillic
 BuildRequires:  xorg-x11-fonts-misc
