@@ -44,7 +44,7 @@ BuildRequires:  libffi-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  make
-BuildRequires:  mysql-devel
+BuildRequires:  mariadb-devel
 BuildRequires:  nodejs
 BuildRequires:  python-devel
 %if 0%{?suse_version}
@@ -74,7 +74,7 @@ Requires:       build >= 20170315
 Requires:       obs-build
 %endif
 Requires:       memcached >= 1.4
-Requires:       mysql
+Requires:       mariadb
 Requires:       obs-bundled-gems = %{version}
 Requires:       sphinx >= 2.2.11
 Requires:       perl(GD)
