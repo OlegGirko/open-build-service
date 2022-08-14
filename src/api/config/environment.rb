@@ -3,7 +3,14 @@ require_relative "application"
 
 # Read config/options.yml into CONFIG
 begin
-  config = YAML.load_file(Rails.root.join("config/options.yml"), aliases: true)
+  ruby_maj = RUBY_VERSION.split('.')[0].to_i
+  ruby_min = RUBY_VERSION.split('.')[1].to_i
+  if ruby_maj > 3 || (ruby_maj == 3 && ruby_min >= 1)
+    load_opts = {aliases: true}
+  else
+    load_opts = {}
+  end
+  config = YAML.load_file(Rails.root.join("config/options.yml"), **load_opts)
   if config.key?(Rails.env)
     CONFIG = config[Rails.env]
   else
