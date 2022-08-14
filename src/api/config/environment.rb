@@ -6,7 +6,14 @@ require_relative 'application'
 path = Rails.root.join('config', 'options.yml')
 
 begin
-  config = YAML.load_file(path, aliases: true)
+  ruby_maj = RUBY_VERSION.split('.')[0].to_i
+  ruby_min = RUBY_VERSION.split('.')[1].to_i
+  if ruby_maj > 3 || (ruby_maj == 3 && ruby_min >= 1)
+    load_opts = {aliases: true}
+  else
+    load_opts = {}
+  end
+  config = YAML.load_file(path, **load_opts)
   if config.key?(Rails.env)
     CONFIG = config[Rails.env]
   else
