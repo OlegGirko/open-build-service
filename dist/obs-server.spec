@@ -990,7 +990,7 @@ fi
 %postun -n obs-api
 %service_del_postun %{obs_api_support_scripts}
 %service_del_postun -r %{apache_service}
-%restart_on_update memcached
+%service_del_postun -r memcached
 %if %{with selinux}
 test "$1" -eq 0 && semodule -r obs-api >/dev/null 2>&1 || :
 %endif
