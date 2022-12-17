@@ -109,7 +109,7 @@ def ignore_by_class?(notice)
                           'Errno::ECONNRESET', 'Interrupt', 'Net::HTTPBadResponse',
                           'RoutesHelper::WebuiMatcher::InvalidRequestFormat', 'Timeout::Error']
 
-  notice[:errors].pluck(:type).intersect?(exceptions_to_ignore)
+  (notice[:errors].pluck(:type) & exceptions_to_ignore).any?
 end
 
 def ignore_by_message?(message)
