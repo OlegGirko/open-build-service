@@ -124,7 +124,9 @@ EOF
 
 %install
 # all operations here since bundle does not decouple compile and install
-pushd %{_sourcedir}/open-build-service-*/src/api
+pushd %{_sourcedir}/open-build-service-*/.
+bash ./dist/patch_gems.sh
+cd src/api
 export GEM_HOME=~/.gems
 %{__obs_bundle_bin} config build.ffi --enable-system-libffi
 %{__obs_bundle_bin} config build.nokogiri --use-system-libraries
