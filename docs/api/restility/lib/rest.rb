@@ -46,13 +46,13 @@ class XmlFile
   end
   
   def XmlFile.find_file file_name
-    if ( File.exists? file_name )
+    if ( File.exist? file_name )
       return file_name
     end
  
     if ( !@@include_dir.empty? )
       file_name = @@include_dir + "/" + file_name
-      if ( File.exists? file_name )
+      if ( File.exist? file_name )
         return file_name
       end
     end
