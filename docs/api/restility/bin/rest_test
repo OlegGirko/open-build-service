@@ -109,8 +109,8 @@ begin
 
   @requests = document.all_children Request
 
-  if ( !File.exists?( options.testfile ) || options.create_template )
-    if ( File.exists?( options.testfile ) )
+  if ( !File.exist?( options.testfile ) || options.create_template )
+    if ( File.exist?( options.testfile ) )
       if ( !options.force )
         STDERR.puts "Test file '#{options.testfile} already exists." +
           " Use '--force' to overwrite it. Exiting."
@@ -131,7 +131,7 @@ begin
   runner = TestRunner.new @requests
 
   configfile = options.testfile + ".config"
-  if ( File.exists? configfile )
+  if ( File.exist? configfile )
     File.open configfile do |file|
       eval file.read, runner.context.get_binding
     end
