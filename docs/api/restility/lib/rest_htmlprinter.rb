@@ -14,7 +14,7 @@ class HtmlPrinter < Printer
   end
 
   def do_prepare
-    unless File.exists? @output_dir
+    unless File.exist? @output_dir
       Dir.mkdir @output_dir
     end
     @index = File.new( @output_dir + "/index.html", "w" )
