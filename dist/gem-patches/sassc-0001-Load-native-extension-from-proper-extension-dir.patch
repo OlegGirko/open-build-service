@@ -1,0 +1,41 @@
+From 97e7e70165d5aab75458b371327243b619f95a6d Mon Sep 17 00:00:00 2001
+From: Oleg Girko <ol@infoserver.lv>
+Date: Thu, 20 Apr 2023 20:39:02 +0100
+Subject: [PATCH] Load native extension from proper extension dir.
+
+Try loading native extension from extension dir specified by Gem
+specification first, before falling back to directories relative to the
+one where Ruby modules are installed.
+
+This fixes load problem with Ruby 3.2 and Bundler 2.4.
+
+Signed-off-by: Oleg Girko <ol@infoserver.lv>
+---
+ lib/sassc/native.rb | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/lib/sassc/native.rb b/lib/sassc/native.rb
+index 3b9f515..85c44a1 100644
+--- a/lib/sassc/native.rb
++++ b/lib/sassc/native.rb
+@@ -7,10 +7,15 @@ module SassC
+     extend FFI::Library
+ 
+     dl_ext = RbConfig::MAKEFILE_CONFIG['DLEXT']
++    extdir = "#{Gem.loaded_specs['sassc'].extension_dir}/sassc"
+     begin
+-      ffi_lib File.expand_path("libsass.#{dl_ext}", __dir__)
++      ffi_lib File.expand_path("libsass.#{dl_ext}", extdir)
+     rescue LoadError # Some non-rvm environments don't copy a shared object over to lib/sassc
+-      ffi_lib File.expand_path("libsass.#{dl_ext}", "#{__dir__}/../../ext")
++      begin
++      ffi_lib File.expand_path("libsass.#{dl_ext}", __dir__)
++      rescue LoadError # Some non-rvm environments don't copy a shared object over to lib/sassc
++        ffi_lib File.expand_path("libsass.#{dl_ext}", "#{__dir__}/../../ext")
++      end
+     end
+ 
+     require_relative "native/sass_value"
+-- 
+2.40.0
+
