@@ -204,6 +204,7 @@ BuildRequires:  perl(Devel::Cover)
 BuildRequires:  perl(Test::Simple) > 1
 # for the resolve_swagger_yaml.rb script
 BuildRequires:  %{rubygem hana}
+BuildRequires:  %{rubygem json}
 BuildRequires:  %{rubygem json_refs}
 # /for the resolve_swagger_yaml.rb script
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
