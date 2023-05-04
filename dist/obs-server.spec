@@ -212,6 +212,7 @@ BuildRequires:  perl-XML-Structured
 #BuildRequires:  perl(XML::Structured)
 
 BuildRequires:  %{rubygem hana}
+BuildRequires:  %{rubygem json}
 BuildRequires:  %{rubygem json_refs}
 # /for the resolve_swagger_yaml.rb script
 Requires(pre):  %{_sbindir}/useradd %{_sbindir}/groupadd
