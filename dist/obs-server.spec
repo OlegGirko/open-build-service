@@ -38,6 +38,10 @@
 %global sbin /sbin
 %endif
 
+%if ! %{defined rubygem}
+%define rubygem() rubygem(%1)
+%endif
+
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 %global apache_user apache
 %global apache_group apache
