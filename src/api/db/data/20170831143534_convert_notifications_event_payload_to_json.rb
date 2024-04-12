@@ -34,19 +34,19 @@ end
 # Hash extension is used to run force_encoding against each string value in the hash
 # in data migration to convert yaml to json serialisation for event payloads
 class Hash
-  def traverse(&)
-    traverse_value(self, &)
+  def traverse(&block)
+    traverse_value(self, &block)
   end
 
   private
 
-  def traverse_value(value, &)
+  def traverse_value(value, &block)
     case value
     when Hash
-      value.each { |key, sub_value| value[key] = traverse_value(sub_value, &) }
+      value.each { |key, sub_value| value[key] = traverse_value(sub_value, &block) }
 
     when Array
-      value.map { |element| traverse_value(element, &) }
+      value.map { |element| traverse_value(element, &block) }
 
     else
       yield(value)
