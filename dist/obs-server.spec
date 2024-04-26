@@ -689,6 +689,9 @@ install -m 0644 dist/system-user-obsrun.conf %{buildroot}%{_sysusersdir}/
 install -m 0644 dist/system-user-obsservicerun.conf %{buildroot}%{_sysusersdir}/
 %endif
 
+base64_version="`gem list -l base64 | grep '^base64' | sed 's/^base64 (default: \(.*\))$/\1/'`"
+sed -i "s/base64 ([0-9.]*)/base64 ($base64_version)/" %{buildroot}%{__obs_api_prefix}/Gemfile.lock
+
 %check
 %if 0%{?disable_obs_test_suite}
 echo "WARNING:"
