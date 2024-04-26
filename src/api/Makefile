@@ -15,6 +15,22 @@ ifneq ($(OBS_API_LOG_DIR),$(OBS_API_PREFIX)/log)
 	rmdir $(DESTDIR)$(OBS_API_PREFIX)/log
 	ln -s $(OBS_API_LOG_DIR) $(DESTDIR)$(OBS_API_PREFIX)/log
 endif
+ifneq ($(OBS_API_TMP_DIR),$(OBS_API_PREFIX)/tmp)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_API_TMP_DIR)
+	test -n "`ls -A $(DESTDIR)$(OBS_API_PREFIX)/tmp`" && \
+	    mv $(DESTDIR)$(OBS_API_PREFIX)/tmp/* \
+	       $(DESTDIR)$(OBS_API_TMP_DIR) || :
+	rmdir $(DESTDIR)$(OBS_API_PREFIX)/tmp
+	ln -s $(OBS_API_TMP_DIR) $(DESTDIR)$(OBS_API_PREFIX)/tmp
+endif
+ifneq ($(OBS_API_STORAGE_DIR),$(OBS_API_PREFIX)/storage)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_API_STORAGE_DIR)
+	test -n "`ls -A $(DESTDIR)$(OBS_API_PREFIX)/storage`" && \
+	    mv $(DESTDIR)$(OBS_API_PREFIX)/storage/* \
+	       $(DESTDIR)$(OBS_API_STORAGE_DIR) || :
+	rmdir $(DESTDIR)$(OBS_API_PREFIX)/storage
+	ln -s $(OBS_API_STORAGE_DIR) $(DESTDIR)$(OBS_API_PREFIX)/storage
+endif
 
 prepare_dirs:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(OBS_API_PREFIX)

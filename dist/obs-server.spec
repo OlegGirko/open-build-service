@@ -66,6 +66,8 @@ Requires:       rubygem-rails\
 %define __obs_document_root %{_datadir}/obs
 %define __obs_api_prefix %{_datadir}/obs-api
 %define __obs_api_log_dir %{_localstatedir}/log/obs-api
+%define __obs_api_tmp_dir %{_localstatedir}/lib/obs-api
+%define __obs_api_storage_dir %{_localstatedir}/cache/obs-api
 %define __obs_build_package_name obs-build
 
 %define secret_key_file %{__obs_api_prefix}/config/secret.key
@@ -105,6 +107,8 @@ Requires:       ruby(abi) = %{__obs_ruby_abi_version}\
 %define __obs_document_root %{apache_datadir}/obs
 %define __obs_api_prefix %{__obs_document_root}/api
 %define __obs_api_log_dir %{__obs_api_prefix}/log
+%define __obs_api_tmp_dir %{__obs_api_prefix}/tmp
+%define __obs_api_storage_dir %{__obs_api_prefix}/storage
 %define __obs_build_package_name build
 
 %define secret_key_file %{__obs_api_prefix}/config/secret.key
@@ -549,6 +553,8 @@ OBS_BACKEND_SERVICE_LOG_DIR=%{obs_backend_service_log_dir}
 OBS_DOCUMENT_ROOT=%{__obs_document_root}
 OBS_API_PREFIX=%{__obs_api_prefix}
 OBS_API_LOG_DIR=%{__obs_api_log_dir}
+OBS_API_TMP_DIR=%{__obs_api_tmp_dir}
+OBS_API_STORAGE_DIR=%{__obs_api_storage_dir}
 OBS_APIDOCS_PREFIX=%{__obs_document_root}/docs
 OBS_SRCSERVER_PORT=%{obs_srcserver_port}
 OBS_REPOSERVER_PORT=%{obs_reposerver_port}
@@ -926,6 +932,31 @@ if [ "$1" == 2 ]; then
   fi
 fi
 
+%pretrans -n obs-api -p <lua>
+paths = {}
+%if "%{__obs_api_tmp_dir}" != "%{__obs_api_prefix}/tmp"
+-- Move old OBS API tmp dir out of the way
+paths["%{__obs_api_prefix}/tmp"] = 1
+%endif
+%if "%{__obs_api_storage_dir}" != "%{__obs_api_prefix}/storage"
+-- Move old OBS API storage dir out of the way
+paths["%{__obs_api_prefix}/storage"] = 1
+%endif
+for path in pairs(paths) do
+  st = posix.stat(path)
+  if st and st.type == "directory" then
+    status = os.rename(path, path .. ".rpmmoved")
+    if not status then
+      suffix = 0
+      while not status do
+        suffix = suffix + 1
+        status = os.rename(path .. ".rpmmoved", path .. ".rpmmoved." .. suffix)
+      end
+      os.rename(path, path .. ".rpmmoved")
+    end
+  end
+end
+
 %post -n obs-common
 %service_add_post obsstoragesetup.service
 %if 0%{?suse_version}
@@ -963,6 +994,8 @@ chown %{apache_user}:%{apache_group} %{__obs_api_prefix}/log/production.log
 %if %{with selinux}
 semodule -i %{_datadir}/selinux/packages/obs-api.pp
 restorecon -R %{__obs_api_log_dir}
+restorecon -R %{__obs_api_tmp_dir}
+restorecon -R %{__obs_api_storage_dir}
 %{_sbindir}/fixfiles -R obs-common restore || :
 %endif
 
@@ -1261,8 +1294,17 @@ usermod -a -G docker obsservicerun
 %{__obs_api_prefix}/log
 %endif
 
-%dir %attr(-,%{apache_user},%{apache_group}) %{__obs_api_prefix}/storage
-%attr(-,%{apache_user},%{apache_group}) %{__obs_api_prefix}/tmp
+%dir %attr(-,%{apache_user},%{apache_group}) %{__obs_api_storage_dir}
+%if "%{__obs_api_storage_dir}" != "%{__obs_api_prefix}/storage"
+# Compatibility symlink to storage dir
+%{__obs_api_prefix}/storage
+%endif
+
+%attr(-,%{apache_user},%{apache_group}) %{__obs_api_tmp_dir}
+%if "%{__obs_api_tmp_dir}" != "%{__obs_api_prefix}/tmp"
+# Compatibility symlink to tmp dir
+%{__obs_api_prefix}/tmp
+%endif
 
 # these dirs primarily belong to apache2:
 %dir %{apache_confdir}
