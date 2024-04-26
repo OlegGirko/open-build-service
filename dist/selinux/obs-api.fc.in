@@ -1,3 +1,4 @@
 @@OBS_API_PREFIX@@/bin/clockworkd system_u:object_r:passenger_exec_t:s0
-@@OBS_API_PREFIX@@/tmp(/.*)? system_u:object_r:passenger_tmp_t:s0
+@@OBS_API_STORAGE_DIR@@(/.*)? system_u:object_r:passenger_tmp_t:s0
+@@OBS_API_TMP_DIR@@(/.*)? system_u:object_r:passenger_tmp_t:s0
 @@OBS_API_LOG_DIR@@(/.*)? system_u:object_r:passenger_log_t:s0
