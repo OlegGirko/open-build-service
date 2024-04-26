@@ -23,6 +23,8 @@ clean:
 	    -e 's,@@OBS_BACKEND_SERVICE_LOG_DIR@@,$(OBS_BACKEND_SERVICE_LOG_DIR),' \
 	    -e 's,@@OBS_API_PREFIX@@,$(OBS_API_PREFIX),' \
 	    -e 's,@@OBS_API_LOG_DIR@@,$(OBS_API_LOG_DIR),' \
+	    -e 's,@@OBS_API_TMP_DIR@@,$(OBS_API_TMP_DIR),' \
+	    -e 's,@@OBS_API_STORAGE_DIR@@,$(OBS_API_STORAGE_DIR),' \
 	    < $*.fc.in > $*.fc
 
 # Don't include /usr/share/selinux/devel/Makefile
