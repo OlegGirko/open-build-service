@@ -541,6 +541,11 @@ sed -i \
 bundler_version="`bundle version | sed 's/^Bundler version \([^ ]*\) .*$/\1/'`"
 sed -i "\$s/^\\( *\\)[^ ]*\$/\\1$bundler_version/" src/api/Gemfile.lock
 
+strscan_version="`gem list --local strscan | grep '^strscan' | sed 's/^.*(default: \([0-9.]*\))/\1/'`"
+if [ -n "$strscan_version" ]; then
+  sed -i "s/strscan (\\([0-9.]*\\))/strscan ($strscan_version)/" src/api/Gemfile.lock
+fi
+
 %build
 export DESTDIR=$RPM_BUILD_ROOT
 export BUNDLE_FORCE_RUBY_PLATFORM=true
