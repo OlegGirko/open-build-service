@@ -581,7 +581,11 @@ OBS_RUBY_ABI_VERSION=%{__obs_ruby_abi_version}
 EOF
 
 pushd src/api
-bundle --local --path %_libdir/obs-api/
+bundled_gems_dir=$(
+    grep '^BUNDLE_PATH:' %{__obs_api_prefix}/.bundle/config |
+    sed -e 's/^BUNDLE_PATH: *//' -e 's/^"\(.*\)"$/\1/'
+)
+bundle config set --local path "$bundled_gems_dir"
 rm -rf vendor/cache/* vendor/cache.next/*
 popd
 
@@ -602,6 +606,9 @@ make resolve_swagger_yaml
 export DESTDIR=$RPM_BUILD_ROOT
 export OBS_VERSION="%{version}"
 DESTDIR=%{buildroot} RAILS_RELATIVE_URL_ROOT=../.. make install
+
+# Don't install bundler config, use the one from obs-bundled-gems package
+rm -rf %{buildroot}%{__obs_api_prefix}/.bundle
 
 %if "%{apache_service}" != "apache2"
 sed -i \
@@ -1286,7 +1293,6 @@ usermod -a -G docker obsservicerun
 %attr(0644,root,root) %{__obs_api_prefix}/config/options.yml.example
 %dir %attr(0755,%apache_user,%apache_group) %{__obs_api_prefix}/db/sphinx
 %dir %attr(0755,%apache_user,%apache_group) %{__obs_api_prefix}/db/sphinx/production
-%{__obs_api_prefix}/.bundle
 
 %config %{__obs_api_prefix}/config/environment.rb
 %config %{__obs_api_prefix}/config/environments/production.rb
