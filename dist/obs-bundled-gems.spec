@@ -25,6 +25,14 @@
 %define __obs_bundle_bin /usr/bin/bundle
 %endif
 
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%define __obs_api_prefix %{_datadir}/obs-api
+%else
+%global apache_datadir /srv/www
+%define __obs_document_root %{apache_datadir}/obs
+%define __obs_api_prefix %{__obs_document_root}/api
+%endif
+
 Name:           obs-bundled-gems
 Version:        2.10~pre
 Release:        0
@@ -206,8 +214,21 @@ chrpath -d %{buildroot}%_libdir/obs-api/ruby/*/gems/mysql2-*/lib/mysql2/mysql2.s
 # fix E: permissions-world-writable for gemspec files
 chmod 0644 %{buildroot}%_libdir/obs-api/ruby/*/specifications/*.gemspec || true
 
+# Create bundler config containing arch-pacific bundled gems path for obs-api
+# See https://github.com/openSUSE/open-build-service/issues/16989
+# for details why this is needed.
+mkdir -p %{buildroot}%{__obs_api_prefix}
+pushd %{buildroot}%{__obs_api_prefix}
+%{__obs_bundle_bin} config set --local path %{_libdir}/obs-api/
+%{__obs_bundle_bin} config --local frozen 1
+%{__obs_bundle_bin} config --local without development:test:assets
+popd
+
 %files
 %defattr(-,root,root,755)
 %_libdir/obs-api
+%{?apache_datadir:%dir %{apache_datadir}}
+%{?__obs_document_root?:%dir %{__obs_document_root}}
+%__obs_api_prefix
 
 %changelog
