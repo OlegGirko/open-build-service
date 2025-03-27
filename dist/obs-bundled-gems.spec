@@ -61,13 +61,13 @@ BuildRequires:  ruby4.0-devel
 BuildRequires:  openldap2-devel
 # For comparing package/bundle versions with make test_rack
 BuildRequires:  rubygem(ruby:4.0.0:rack)
+PreReq: permissions
 %else
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-bundler
 BuildRequires:  openldap-devel
 %endif
 BuildRequires:  chrpath
-PreReq: permissions
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
