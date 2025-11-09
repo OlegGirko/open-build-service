@@ -56,7 +56,6 @@ Requires:       mod_xforward\
 Requires:       rubygem-passenger\
 Requires:       mod_passenger\
 Requires:       ruby\
-Requires:       rubygem-rails\
 %{nil}
 
 %define __obs_ruby_abi_version 2.6.0
