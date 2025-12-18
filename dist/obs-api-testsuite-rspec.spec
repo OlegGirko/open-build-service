@@ -16,6 +16,8 @@
 #
 
 
+%global debug_package %{nil}
+
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 %define __obs_ruby_bin /usr/bin/ruby
 %define __obs_rake_bin /usr/bin/rake
