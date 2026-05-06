@@ -526,13 +526,16 @@ sed -i \
     src/api/Rakefile \
 %endif
 
-bundler_version="`bundle version | sed 's/^Bundler version \([^ ]*\) .*$/\1/'`"
+bundler_version="`bundle version | sed -E 's/^(Bundler version)? *([^ ]*) .*$/\2/'`"
 sed -i "\$s/^\\( *\\)[^ ]*\$/\\1$bundler_version/" src/api/Gemfile.lock
 
-strscan_version="`gem list --local strscan | grep '^strscan' | sed 's/^.*(default: \([0-9.]*\))/\1/'`"
-if [ -n "$strscan_version" ]; then
-  sed -i "s/strscan (\\([0-9.]*\\))/strscan ($strscan_version)/" src/api/Gemfile.lock
-fi
+for gem in base64 strscan stringio; do
+  gem_version="`gem list --local "$gem" | grep "^$gem" | sed -E 's/^.*\((default:)? *([0-9.]*)\)/\2/'`"
+  if [ -n "$gem_version" ]; then
+    sed -i "s/'$gem', '[0-9.]*'/'$gem', '$gem_version'/" src/api/Gemfile
+    sed -E -i "s/$gem \\((= *)?[0-9.]*\\)/$gem (\\1$gem_version)/" src/api/Gemfile.lock
+  fi
+done
 
 %build
 export DESTDIR=$RPM_BUILD_ROOT
@@ -699,10 +702,6 @@ mkdir -p %{buildroot}%{_sysusersdir}
 install -m 0644 dist/system-user-obsrun.conf %{buildroot}%{_sysusersdir}/
 install -m 0644 dist/system-user-obsservicerun.conf %{buildroot}%{_sysusersdir}/
 %endif
-
-base64_version="`gem list -l base64 | grep '^base64' | sed -e 's/^base64 (\(.*\))$/\1/' -e 's/^default: *//'`"
-test -n "$base64_version" &&
-  sed -i "s/base64 ([0-9.]*)/base64 ($base64_version)/" %{buildroot}%{__obs_api_prefix}/Gemfile.lock
 
 %check
 %if 0%{?disable_obs_test_suite}
