@@ -1,0 +1,55 @@
+From f753b90cab902033a1891ce57055791ae7acc75e Mon Sep 17 00:00:00 2001
+From: Samuel Williams <samuel.williams@oriontransfer.co.nz>
+Date: Tue, 15 Apr 2025 17:40:55 +0900
+Subject: [PATCH] Support for `rb_io_mode_t`.
+
+---
+ ext/stringio/extconf.rb | 2 ++
+ ext/stringio/stringio.c | 9 +++++++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/ext/stringio/extconf.rb b/ext/stringio/extconf.rb
+index 553732f7..00897669 100644
+--- a/ext/stringio/extconf.rb
++++ b/ext/stringio/extconf.rb
+@@ -1,6 +1,8 @@
+ # frozen_string_literal: false
+ require 'mkmf'
+ if RUBY_ENGINE == 'ruby'
++  have_type("rb_io_mode_t", "ruby/io.h")
++
+   create_makefile('stringio')
+ else
+   File.write('Makefile', dummy_makefile("").join)
+diff --git a/ext/stringio/stringio.c b/ext/stringio/stringio.c
+index 89c1ff7c..2be3d403 100644
+--- a/ext/stringio/stringio.c
++++ b/ext/stringio/stringio.c
+@@ -35,12 +35,16 @@ STRINGIO_VERSION = "3.1.6";
+ # define rb_class_new_instance_kw(argc, argv, klass, kw_splat) rb_class_new_instance(argc, argv, klass)
+ #endif
+ 
++#ifndef HAVE_TYPE_RB_IO_MODE_T
++typedef int rb_io_mode_t;
++#endif
++
+ struct StringIO {
+     VALUE string;
+     rb_encoding *enc;
+     long pos;
+     long lineno;
+-    int flags;
++    rb_io_mode_t flags;
+     int count;
+ };
+ 
+@@ -1852,7 +1856,8 @@ strio_set_encoding(int argc, VALUE *argv, VALUE self)
+ 	enc = rb_find_encoding(ext_enc);
+ 	if (!enc) {
+ 	    rb_io_enc_t convconfig;
+-	    int oflags, fmode;
++	    int oflags;
++	    rb_io_mode_t fmode;
+ 	    VALUE vmode = rb_str_append(rb_str_new_cstr("r:"), ext_enc);
+ 	    rb_io_extract_modeenc(&vmode, 0, Qnil, &oflags, &fmode, &convconfig);
+ 	    enc = convconfig.enc2;
