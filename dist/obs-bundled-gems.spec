@@ -108,6 +108,8 @@ Summary:        Holding dependencies required to run frontend test suites
 Group:          Productivity/Networking/Web/Utilities
 %if 0%{?suse_version}
 Requires:       inst-source-utils
+%else
+Requires:       /usr/bin/node
 %endif
 Requires:       nodejs
 Requires:       obs-api-deps = %{version}
